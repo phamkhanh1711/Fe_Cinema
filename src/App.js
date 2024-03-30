@@ -1,23 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { CountdownProvider } from "./CountdownContext";
+import Footer from "./pages/Footer";
+import Header from "./pages/Header";
 
-function App() {
+function App(props) {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div>
+      <CountdownProvider>
+        <Header />
+        <div
+          style={{
+            paddingTop: "135px",
+            minHeight: "100vh",
+            background: "rgb(18, 24, 37)",
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          <div id="col-1063932164" class="col small-12 large-12">
+            {props.children}
+          </div>
+        </div>
+      </CountdownProvider>
+
+      {/* <Footer /> */}
     </div>
   );
 }

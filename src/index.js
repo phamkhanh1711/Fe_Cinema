@@ -1,14 +1,43 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import "./index.css";
+import App from "./App";
+import "font-awesome/css/font-awesome.min.css";
+import reportWebVitals from "./reportWebVitals";
+import Home from "./pages/Home";
+import Login from "./members/Login";
+import Register from "./members/Register";
+import LichChieuPhim from "./members/CinemaSystem/LichChieuPhim";
+import Chontime from "./members/CinemaSystem/Chontime";
+import ChonGhe from "./members/CinemaSystem/ChonGhe";
+import ChonDoAn from "./members/CinemaSystem/ChonDoAn";
+import ThanhToan from "./members/CinemaSystem/ThanhToan";
+import TaiKhoan from "./members/TaiKhoan";
+import Khuyenmai from "./pages/Khuyenmai";
+import Hethongrap from "./pages/Hethongrap";
+import Detail from "./members/CinemaSystem/Detail";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <Router>
+    <App>
+      <Routes>
+        <Route index path="/" element={<Home />} />
+        <Route index path="/login" element={<Login />} />
+        <Route index path="/register" element={<Register />} />
+        <Route index path="/lichchieuphim" element={<LichChieuPhim />} />
+        <Route index path="/chontime" element={<Chontime />} />
+        <Route index path="/chonghe" element={<ChonGhe />} />
+        <Route index path="/chondoan" element={<ChonDoAn />} />
+        <Route index path="/thanhtoan" element={<ThanhToan />} />
+        <Route index path="/taikhoan" element={<TaiKhoan />} />
+        <Route index path="/detail" element={<Detail />} />
+        <Route index path="/khuyenmai" element={<Khuyenmai />} />
+        <Route index path="/hethongrap" element={<Hethongrap />} />
+      </Routes>
+    </App>
+  </Router>
 );
 
 // If you want to start measuring performance in your app, pass a function
