@@ -13,15 +13,14 @@ function App(props) {
             paddingTop: "135px",
             minHeight: "100vh",
             background: "rgb(18, 24, 37)",
-          }}
-        >
+          }}>
           <div id="col-1063932164" class="col small-12 large-12">
             {props.children}
           </div>
         </div>
       </CountdownProvider>
 
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }

@@ -75,7 +75,7 @@ function Login() {
       const data = {
         email: inputs.email,
         password: inputs.password,
-        // role_id: inputs.role_id,
+         role: inputs.role,
       };
       axios
         .post("http://localhost:4000/auth/login", data)
@@ -133,9 +133,9 @@ function Login() {
               className="sc-gzrROc kaVwkx mt-4"
               onSubmit={handleSubmit}
             >
-              <div className="sc-gkSfol gGqBmq mt-2">
+              <div  className="col-12 col-md-12 col-lg-6">
                 <label className="sc-fmPOXC eQGqHb">Email :</label>
-                <div className="d-flex flex-column w-100">
+                <div >
                   <input
                     type="email"
                     placeholder="Email Address"
@@ -150,9 +150,9 @@ function Login() {
                   <small className="sc-eYqcxL hmuDPY invalid-feedback" />
                 </div>
               </div>
-              <div className="sc-gkSfol gGqBmq mt-2">
+              <div className="col-12 col-md-12 col-lg-6">
                 <label className="sc-fmPOXC eQGqHb">Mật khẩu :</label>
-                <div className="d-flex flex-column w-100">
+                <div >
                   <input
                     type="password"
                     placeholder="Password"
@@ -180,7 +180,7 @@ function Login() {
                 Đăng ký thành viên
               </Link>
             </form>
-            <CheckError errors={errors} />
+           
           </div>
           <section className="sc-ehvNnt kEeQkC">
             <div

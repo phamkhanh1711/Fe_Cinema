@@ -55,6 +55,7 @@ function Register() {
     email: "",
     password: "",
     phoneNumber: "",
+    role: "",
   });
 
   function handleInput(e) {
@@ -94,7 +95,15 @@ function Register() {
       errorsSubmit.password = "Vui lòng Nhập mật khẩu";
       flag = false;
     }
+    if (inputs.phoneNumber === "") {
+      errorsSubmit.phoneNumber = "Vui lòng Nhập số điện thoại";
+      flag = false;
+    }
 
+    if (inputs.role === "") {
+      errorsSubmit.role = "Vui lòng chọn role";
+      flag = false;
+    }
     // else if (
     //   !/^[A-Z]/.test(inputs.password) || // Kiểm tra chữ cái đầu tiên là in hoa
     //   !/\d/.test(inputs.password) ||     // Kiểm tra có ít nhất một chữ số
@@ -113,13 +122,16 @@ function Register() {
       setErrors(errorsSubmit);
     } else {
       setErrors({});
+      
       const data = {
+        
         fullName: inputs.fullName,
         email: inputs.email,
         password: inputs.password,
         phoneNumber: inputs.phoneNumber,
+        role: inputs.role,
       };
-
+      console.log(data);
       // Send a POST request to your API's registration endpoint
       axios
         .post("http://localhost:4000/auth/signup", data)
@@ -141,7 +153,10 @@ function Register() {
     }
   }
 
-  const arr = [{ id: 2, name: "Member" }, { id: 1 }];
+  const arr = [
+    { id: 2, name: "user" },
+    { id: 1, name: "admin" }
+  ];
   function IsEmail(email) {
     let regex =
       /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zAZ0-9]{2,4})+$/;
@@ -153,11 +168,12 @@ function Register() {
   }
   function renderSelect() {
     return arr.map((item) => (
-      <option key={item.id} value={item.id}>
+      <option key={item.id} value={item.name}>
         {item.name}
       </option>
     ));
   }
+  
   return (
     <div>
       {loading ? (
@@ -191,7 +207,7 @@ function Register() {
                           <div className="col-12 col-md-12 col-lg-6">
                             <div id="col-inner1" className="col-inner">
                               <form className="row" onSubmit={handleSubmit}>
-                                <div className="col-md-12 col-sm-12 col-lg-6">
+                                <div className="col-md-12 col-sm-12 col-lg-5">
                                   <div className="col-inner">
                                     <p>
                                       <label htmlFor="reg_last_name">
@@ -227,13 +243,14 @@ function Register() {
                                         name="email"
                                         onChange={handleInput}
                                       />
-                                      {errors.email && (
+                                      
+                                    </p>
+                                    {errors.email && (
                                         <span className="text-danger">
                                           {" "}
                                           {errors.email}
                                         </span>
                                       )}
-                                    </p>
                                   </div>
                                 </div>
 
@@ -250,16 +267,17 @@ function Register() {
                                         name="password"
                                         onChange={handleInput}
                                       />
-                                      {errors.password && (
+                                     
+                                    </p>
+                                    {errors.password && (
                                         <span className="text-danger">
                                           {" "}
                                           {errors.password}
                                         </span>
                                       )}
-                                    </p>
                                   </div>
                                 </div>
-                                <div className="col-md-12 col-sm-12 col-lg-8">
+                                <div className="col-md-12 col-sm-12 col-lg-5">
                                   <div className="col-inner">
                                     <p>
                                       <label htmlFor="reg_last_name">
@@ -278,17 +296,28 @@ function Register() {
                                           {errors.phoneNumber}
                                         </span>
                                       )}
+                                      
                                     </p>
                                   </div>
                                 </div>
-
+<div className="col-inner">
+  <p>
+    <label htmlFor="reg_last_name">
+      Role <span className="required">*</span>
+    </label>
+    <select name="role" onChange={handleInput}>
+      {renderSelect()}
+    </select>
+    {errors.role && <span className="text-danger">{errors.role}</span>}
+  </p>
+</div>
                                 <button
                                   className="sc-eDWCr gyTwqg mt-2"
                                   type="submit">
                                   Đăng ký thành viên
                                 </button>
                               </form>
-                              <CheckError errors={errors} />
+                              {/* <CheckError errors={errors} /> */}
                             </div>
                           </div>
 

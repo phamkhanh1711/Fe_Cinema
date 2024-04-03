@@ -181,30 +181,7 @@ function Footer() {
           </section>
         </div>
       </div>
-      {/* <div className="absolute-footer dark medium-text-center text-center">
-        <div className="container clearfix">
-          <div className="footer-primary pull-left">
-            <div className="copyright-footer">
-              <section className="section">
-                <div className="section-content relative">
-                  <div className="logo-text">
-                    <a href="/"><img src="https://demo.bhdstar.vn/wp-content/uploads/2023/08/logo.png" alt="BHD Star Logo" width="80" height="80" /></a>
-                  </div>
-                  <div className="info-text">
-                    <p className="p1">
-                      <strong>Công ty TNHH MTV Ngôi Sao Cineplex BHD Việt Nam</strong><br />
-                      <strong>Giấy CNĐKDN:</strong> Giấy phép kinh doanh số: 0104597158. Đăng ký lần đầu ngày 15 tháng 04 năm 2010<br />
-                      <strong>Địa Chỉ:</strong> Tầng 11, Tòa nhà Hồng Hà Building, Lý Thường Kiệt, P.Phan Chu Trinh, Quận Hoàn Kiếm, Hà Nội<br />
-                      <strong>Hotline:</strong> 19002099<br />
-                      COPYRIGHT 2010 BHD STAR. ALL RIGHTS RESERVED
-                    </p>
-                  </div>
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-      </div>  */}
+     
     </div>
   );
 }
