@@ -2469,7 +2469,7 @@ textarea {
   justify-content: center;
   align-items: center;
   text-align: center;
-  margin-top: 50px; /* Khoảng cách từ trên xuống */
+  margin-top: -55px; /* Khoảng cách từ trên xuống */
 }
 .media-list {
   width: 70%;

@@ -2141,8 +2141,7 @@ span.text-uppercae {
   min-height: auto;
 }
 
-.normal-title .page-title-inner > .row > .col {
-}
+
 
 .row:after {
   clear: both;
@@ -2271,17 +2270,7 @@ td,
 th {
   padding: 20px 10px;
 }
-th,
-td,
-label,
-.breadcrumbs,
-.absolute-footer,
-.breadcrumbs a,
-.nav-dropdown,
-.nav > li > a,
-.nav-dropdown > li > a,
-.nav-column > li > a {
-}
+
 th,
 td {
   font-size: 1em;
@@ -2745,8 +2734,7 @@ a.button.primary.expand {
   margin-left: 16%;
 }
 
-.concession-items .concession-item .quantity span.minus {
-}
+
 .concession-items .concession-item .quantity span.minus,
 .concession-items .concession-item .quantity span.plus {
   width: 20px;
@@ -2846,33 +2834,6 @@ select,
 .select2-container .select2-choice,
 .select2-container .select2-selection {
   font-size: 1.5em;
-}
-input[type="email"],
-input[type="date"],
-input[type="search"],
-input[type="number"],
-input[type="text"],
-input[type="tel"],
-input[type="url"],
-input[type="password"],
-textarea,
-select,
-.select-resize-ghost,
-.select2-container .select2-choice,
-.select2-container .select2-selection,
-.form-flat input:not([type="submit"]),
-.form-flat textarea,
-.form-flat select,
-.form-flat button,
-.form-flat input,
-a.button,
-button,
-.button.is-outline,
-input[type="submit"],
-a.quick-view,
-.wishlist_table .add_to_cart,
-.yith-wcwl-add-button > a,
-table.compare-list .add-to-cart td a:not(.unstyled_button) {
 }
 
 .apply-coupon-form .apply-coupon-submit {
@@ -3497,16 +3458,12 @@ td.text-right {
 .mt-col-item .post-item .thumb img {
   border-radius: 8px;
 }
-.post-item .thumb img {
-}
 
 .post-item .thumb {
   text-align: center;
   margin-bottom: 20px;
 }
 
-.post-item .thumb img {
-}
 
 .news-slider .col img {
   border-radius: 8px;
@@ -3543,4 +3500,33 @@ td.text-right {
 }
 .flickity-viewport {
   width: 87%;
+}
+.custom-button {
+  width: 150px; /* Độ rộng của nút */
+  height: 40px; /* Độ cao của nút */
+  border-color: #90c63f;
+  background: linear-gradient(180deg, #50b648 0%, #90c63f 59.9%, #b2ec0f 99.48%);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  font-size: 13px; /* Kích thước chữ */
+  text-align: center; /* Canh lề chữ giữa nút */
+  padding: 10px 20px; /* Kích thước phần đệm */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.custom-button span {
+  margin-right: 10px; /* Khoảng cách giữa chữ và biểu tượng */
+}
+
+.custom-button:hover {
+ background: var(--primary-color) !important;
+}
+.card-body > .flex-grow-1 {
+  background-color: #ffffff; /* Màu trắng */
+  padding: 20px; /* Điều chỉnh padding theo nhu cầu */
+  border-radius: 10px; /* Điều chỉnh bo góc theo nhu cầu */
+  margin-bottom: 20px; /* Điều chỉnh khoảng cách giữa các phần tử */
 }

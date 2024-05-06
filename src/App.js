@@ -2,11 +2,26 @@ import "./App.css";
 import { CountdownProvider } from "./CountdownContext";
 import Footer from "./pages/Footer";
 import Header from "./pages/Header";
-
+import React, { useState } from "react";
+import { UserContext } from "./UserContext";
 function App(props) {
+
+
+  const [tongqty, setQty] = useState();
+  function loginContext(xx) {
+    setQty(xx);
+  }
+
+
+
+
   return (
     <div>
-      <CountdownProvider>
+      <UserContext.Provider value={{
+        tongqty: tongqty,
+        loginContext: loginContext,
+      
+      }}>
         <Header />
         <div
           style={{
@@ -18,7 +33,7 @@ function App(props) {
             {props.children}
           </div>
         </div>
-      </CountdownProvider>
+      </UserContext.Provider>
 
       <Footer />
     </div>

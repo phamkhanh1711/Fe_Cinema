@@ -83,29 +83,29 @@ function Login() {
           console.log(res);
 
           const Token = res.data.data.accessToken;
-          console.log(Token);
-          // Cookies.set("Token", Token);
-          // const Auth = res.data.User;
-          // console.log(Auth);
-          // Cookies.set("Auth", JSON.stringify(Auth));
+          console.log(Token); 
+          Cookies.set("Token", Token);
+          const Auth = res.data.data.auth;
+          console.log(Auth);
+           Cookies.set("Auth", JSON.stringify(Auth));
 
           // Cookies.set("Auth", JSON.stringify(Auth));
 
           Swal.fire({
             title: "Good job!",
-            text: "login Successful !",
+            text: res.data.message,
             icon: "success",
           });
           navigate("/");
           // Sau khi đăng nhập thành công, điều hướng đến trang tương ứng
         })
-        .catch((error) => {
-          console.log(error);
+        .catch((response) => {
+          console.log(response);
           Swal.fire({
             title: "Error!",
-            text: "Login failed. Please check your credentials.",
+            text: response.response.data.message  ,
             icon: "error",
-          });
+      })
         });
     }
   }

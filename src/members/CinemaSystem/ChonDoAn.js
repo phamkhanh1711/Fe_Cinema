@@ -6,22 +6,47 @@ import "aos/dist/aos.css";
 import CountDownTimer from "./CountDownTimer";
 import Swal from "sweetalert2";
 import { useCountdownContext } from "../../CountdownContext";
+import axios from "axios";
+import { useContext } from "react";
+import { UserContext } from "../../UserContext";
 function ChonDoAn() {
+  const user = useContext(UserContext);
+  console.log(user);
+
   useEffect(() => {
     Aos.init();
   }, []);
 
-  const [quantity, setQuantity] = useState(0);
+  const [itemQuantities, setItemQuantities] = useState({});
+  const [foods, setFoods] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
 
-  const handleDecrease = () => {
-    if (quantity > 0) {
-      setQuantity((prevQuantity) => prevQuantity - 1);
+  const handleIncrease = (itemId) => {
+    setItemQuantities((prevQuantities) => {
+      const newQuantity = (prevQuantities[itemId] || 0) + 1;
+      console.log("Số lượng hiện tại của", itemId, ":", newQuantity);
+      return {
+        ...prevQuantities,
+        [itemId]: newQuantity,
+      };
+    });
+  };
+
+  const handleDecrease = (itemId) => {
+    console.log("Decrease item", itemId);
+    if (itemQuantities[itemId] > 0) {
+      setItemQuantities((prevQuantities) => {
+        const newQuantity = prevQuantities[itemId] - 1;
+        console.log("Số lượng hiện tại của", itemId, ":", newQuantity);
+        return {
+          ...prevQuantities,
+          [itemId]: newQuantity,
+        };
+      });
     }
   };
 
-  const handleIncrease = () => {
-    setQuantity((prevQuantity) => prevQuantity + 1);
-  };
+
 
   const handleOnComplete = () => {
     Swal.fire({
@@ -32,6 +57,63 @@ function ChonDoAn() {
       timer: 1500,
     });
   };
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:4000/food/all-Food")
+      .then((response) => {
+        console.log(response);
+        setFoods(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, []);
+  const renderFoods = () => {
+    return foods.map((food) => {
+      return (
+        <div
+          className="icon-box featured-box align-middle text-left"
+          key={food.id}>
+          <div className="icon-box-img" style={{ width: "80px" }}>
+            <div className="icon">
+              <div className="icon-inner">
+                <img
+                  src="https://booking.bhdstar.vn/CDN/media/entity/get/ItemGraphic/662279?width=160&height=160&referenceScheme=HeadOffice&allowPlaceHolder=true"
+                  alt="Product"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="icon-box-text last-reset">
+            <h3 className="product-name">{food.foodName}</h3>
+            <div className="stack stack-row justify-between items-center">
+              <div className="quantity">
+                <span
+               
+                  className="minus"
+                  onClick={() => handleDecrease(food.foodId)}>
+                  -
+                </span>
+                <span className="number">
+                  {itemQuantities[food.foodId] || 0}
+                </span>
+                <span
+                  className="plus"
+                  onClick={() => handleIncrease(food.foodId)}>
+                  +
+                </span>
+              </div>
+              <span className="price">
+    {(itemQuantities[food.foodId] || 0) * food.foodPrice} VND
+  </span>            
+            </div>
+          </div>
+        </div>
+      );
+    });
+  };
+
   return (
     <>
       <div id="col-1063932164" className="col small-12 large-12">
@@ -72,156 +154,10 @@ function ChonDoAn() {
                                 <hr className="dashed" />
                                 <div className="tab-content concession-items">
                                   <div className="concession-item">
-                                    <div class="icon-box featured-box align-middle text-left">
-                                      <div
-                                        className="icon-box-img"
-                                        style={{ width: "80px" }}
-                                      >
-                                        <div className="icon">
-                                          <div className="icon-inner">
-                                            <img src="https://booking.bhdstar.vn/CDN/media/entity/get/ItemGraphic/662279?width=160&height=160&referenceScheme=HeadOffice&allowPlaceHolder=true" />
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="icon-box-text last-reset">
-                                        <h3 className>
-                                          OL Special Combo1 Bap nam Ga Lac
-                                          (Sweet)
-                                        </h3>
-                                        <div className="stack stack-row justify-between items-center">
-                                          <div className="quantity">
-                                            <span
-                                              className="minus"
-                                              onClick={handleDecrease}
-                                            >
-                                              -
-                                            </span>
-                                            <span className="number">
-                                              {quantity}
-                                            </span>
-                                            <span
-                                              className="plus"
-                                              onClick={handleIncrease}
-                                            >
-                                              +
-                                            </span>
-                                          </div>
-                                          <span className="price">
-                                            <del>150.000 VND</del>
-                                            <br />
-                                            135.000 VND
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
+                                    {renderFoods()}
+                                    <div className="total-price">Tổng giá: {totalPrice} VND</div>
                                   </div>
                                   {/* Add other concession items here */}
-                                </div>
-
-                                <div className="tab-content concession-items">
-                                  <div className="concession-item">
-                                    <div class="icon-box featured-box align-middle text-left">
-                                      <div
-                                        className="icon-box-img"
-                                        style={{ width: "80px" }}
-                                      >
-                                        <div className="icon">
-                                          <div className="icon-inner">
-                                            <img src="https://booking.bhdstar.vn/CDN/media/entity/get/ItemGraphic/662279?width=160&height=160&referenceScheme=HeadOffice&allowPlaceHolder=true" />
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="icon-box-text last-reset">
-                                        <h3 className>
-                                          OL Special Combo1 Bap nam Ga Lac
-                                          (Sweet)
-                                        </h3>
-                                        <div className="stack stack-row justify-between items-center">
-                                          <div className="quantity">
-                                            <span className="minus">-</span>
-                                            <span className="number">0</span>
-                                            <span className="plus">+</span>
-                                          </div>
-                                          <span className="price">
-                                            <del>150.000 VND</del>
-                                            <br />
-                                            135.000 VND
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {/* Add other concession items here */}
-                                </div>
-
-                                <div className="tab-content concession-items">
-                                  <div className="concession-item">
-                                    <div class="icon-box featured-box align-middle text-left">
-                                      <div
-                                        className="icon-box-img"
-                                        style={{ width: "80px" }}
-                                      >
-                                        <div className="icon">
-                                          <div className="icon-inner">
-                                            <img src="https://booking.bhdstar.vn/CDN/media/entity/get/ItemGraphic/662279?width=160&height=160&referenceScheme=HeadOffice&allowPlaceHolder=true" />
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="icon-box-text last-reset">
-                                        <h3 className>
-                                          OL Special Combo1 Bap nam Ga Lac
-                                          (Sweet)
-                                        </h3>
-                                        <div className="stack stack-row justify-between items-center">
-                                          <div className="quantity">
-                                            <span className="minus">-</span>
-                                            <span className="number">0</span>
-                                            <span className="plus">+</span>
-                                          </div>
-                                          <span className="price">
-                                            <del>150.000 VND</del>
-                                            <br />
-                                            135.000 VND
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="tab-content concession-items">
-                                    <div className="concession-item">
-                                      <div class="icon-box featured-box align-middle text-left">
-                                        <div
-                                          className="icon-box-img"
-                                          style={{ width: "80px" }}
-                                        >
-                                          <div className="icon">
-                                            <div className="icon-inner">
-                                              <img src="https://booking.bhdstar.vn/CDN/media/entity/get/ItemGraphic/662279?width=160&height=160&referenceScheme=HeadOffice&allowPlaceHolder=true" />
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div className="icon-box-text last-reset">
-                                          <h3 className>
-                                            OL Special Combo1 Bap nam Ga Lac
-                                            (Sweet)
-                                          </h3>
-                                          <div className="stack stack-row justify-between items-center">
-                                            <div className="quantity">
-                                              <span className="minus">-</span>
-                                              <span className="number">0</span>
-                                              <span className="plus">+</span>
-                                            </div>
-                                            <span className="price">
-                                              <del>150.000 VND</del>
-                                              <br />
-                                              135.000 VND
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    {/* Add other concession items here */}
-                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -282,8 +218,7 @@ function ChonDoAn() {
                                     <span>Tổng tiền</span>
                                     <span
                                       className="is-xxsmall"
-                                      style={{ display: "none" }}
-                                    >
+                                      style={{ display: "none" }}>
                                       (Đã bao gồm phụ thu)
                                     </span>
                                   </td>
@@ -294,8 +229,7 @@ function ChonDoAn() {
 
                             <div
                               className="text-center"
-                              style={{ marginTop: "20px" }}
-                            >
+                              style={{ marginTop: "20px" }}>
                               <div
                                 className="error-message"
                                 style={{ display: "none" }}
@@ -303,8 +237,7 @@ function ChonDoAn() {
                               <Link
                                 to="/thanhtoan"
                                 className="button primary expand"
-                                style={{ marginBottom: "15px" }}
-                              >
+                                style={{ marginBottom: "15px" }}>
                                 Chọn đồ ăn (3/4)
                               </Link>
                               <div style={{ marginBottom: "5px" }}>

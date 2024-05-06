@@ -17,6 +17,8 @@ import TaiKhoan from "./members/TaiKhoan";
 import Khuyenmai from "./pages/Khuyenmai";
 import Hethongrap from "./pages/Hethongrap";
 import Detail from "./members/CinemaSystem/Detail";
+import Comment from "./members/CinemaSystem/Comment";
+import ListComment from "./members/CinemaSystem/ListComment";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -27,12 +29,14 @@ root.render(
         <Route index path="/login" element={<Login />} />
         <Route index path="/register" element={<Register />} />
         <Route index path="/lichchieuphim" element={<LichChieuPhim />} />
-        <Route index path="/chontime" element={<Chontime />} />
-        <Route index path="/chonghe" element={<ChonGhe />} />
+        <Route index path="/chontime/:movieId" element={<Chontime />} />
+        <Route index path="/chonghe/:showId" element={<ChonGhe />} />
         <Route index path="/chondoan" element={<ChonDoAn />} />
         <Route index path="/thanhtoan" element={<ThanhToan />} />
         <Route index path="/taikhoan" element={<TaiKhoan />} />
-        <Route index path="/detail" element={<Detail />} />
+        <Route index path="/detail/:movieId" element={<Detail />} />
+        <Route index path="/comment/:movieId" element={<Comment/>} />
+        <Route index path="/listcomment" element={<ListComment/>} />
         <Route index path="/khuyenmai" element={<Khuyenmai />} />
         <Route index path="/hethongrap" element={<Hethongrap />} />
       </Routes>

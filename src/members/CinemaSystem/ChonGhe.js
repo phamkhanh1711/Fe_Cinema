@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import ghethuong from "/FE_CGV/fecenima/src/img/ghethuong.png";
 import ghevip from "/FE_CGV/fecenima/src/img/ghevip.png";
 import ghedoi from "/FE_CGV/fecenima/src/img/ghedoi.png";
@@ -12,31 +12,9 @@ import LinearProgress from "@mui/material/LinearProgress";
 import CountDownTimer from "./CountDownTimer";
 import Swal from "sweetalert2";
 import { useCountdownContext } from "../../CountdownContext";
+import axios from "axios";
 function ChonGhe() {
-  const storedCountdownTime =
-    parseInt(localStorage.getItem("countdownTime")) || 60;
-  const [countdownTime, setCountdownTime] = useState(storedCountdownTime);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCountdownTime((prev) => {
-        const newTime = prev - 1;
-        if (newTime >= 0) {
-          // Kiểm tra xem thời gian còn lại có lớn hơn hoặc bằng 0 không
-          localStorage.setItem("countdownTime", newTime.toString()); // Chuyển đổi giá trị thành chuỗi trước khi lưu vào localStorage
-          return newTime;
-        } else {
-          clearInterval(interval);
-          localStorage.removeItem("countdownTime");
-          return 0; // Trả về 0 nếu thời gian còn lại âm
-        }
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
+  
   useEffect(() => {
     Aos.init();
   }, []);
@@ -64,6 +42,16 @@ function ChonGhe() {
   // const handleImageClick = (index) => {
   //   setSelectedImage(images[index]);
   // };
+
+  const showId = useParams()
+  console.log(showId)
+  useEffect(() => {
+    axios.get(`http://localhost:4000/seat/allSeat/${showId}`).then((response) => {
+      console.log(response);
+    });
+    
+    
+}, [showId]);
   return (
     <>
       <div id="col-1063932164" className="col small-12 large-12">
@@ -515,91 +503,45 @@ function ChonGhe() {
                                           </td>
                                         )
                                       )}
-                                      <td>J</td>
+                                      <td>I</td>
                                     </tr>
+
+                                 
+                                   
 
                                     <tr>
                                       <td>J</td>
-                                      {Array.from(
-                                        { length: 19 },
-                                        (_, index) => (
-                                          <td key={`J${index + 1}`} colSpan={1}>
-                                            <div className="stack stack-row justify-center items-center">
-                                              <img
-                                                src={
-                                                  selectedSeats[`J${index + 1}`]
-                                                    ? ghedachon
-                                                    : ghethuong
-                                                }
-                                                alt={`Seat J${index + 1}`}
-                                                onClick={() =>
-                                                  handleClick(`J${index + 1}`)
-                                                }
-                                              />
-                                            </div>
-                                          </td>
-                                        )
-                                      )}
-                                      <td>J</td>
-                                    </tr>
-
-                                    <tr>
-                                      <td>K</td>
-                                      {Array.from(
-                                        { length: 19 },
-                                        (_, index) => (
-                                          <td key={`K${index + 1}`} colSpan={1}>
-                                            <div className="stack stack-row justify-center items-center">
-                                              <img
-                                                src={
-                                                  selectedSeats[`K${index + 1}`]
-                                                    ? ghedachon
-                                                    : ghethuong
-                                                }
-                                                alt={`Seat K${index + 1}`}
-                                                onClick={() =>
-                                                  handleClick(`K${index + 1}`)
-                                                }
-                                              />
-                                            </div>
-                                          </td>
-                                        )
-                                      )}
-                                      <td>K</td>
-                                    </tr>
-
-                                    <tr>
-                                      <td>L</td>
                                       {Array.from({ length: 9 }, (_, index) => (
-                                        <td key={`L${index + 1}`} colspan={2}>
+                                        <td key={`J${index + 1}`} colspan={2}>
                                           <div className="stack2 stack-row justify-center items-center">
                                             <img
                                               src={
-                                                selectedSeats[`L${index + 1}`]
+                                                selectedSeats[`J${index + 1}`]
                                                   ? ghedachon
                                                   : ghedoi
                                               }
-                                              alt={`Seat L${index + 1}`}
+                                              alt={`Seat J${index + 1}`}
                                               onClick={() =>
-                                                handleClick(`L${index + 1}`)
+                                                handleClick(`J${index + 1}`)
                                               }
                                             />
                                             <img
                                               src={
-                                                selectedSeats[`L${index + 1}`]
+                                                selectedSeats[`J${index + 1}`]
                                                   ? ghedachon
                                                   : ghedoi
                                               }
-                                              alt={`Seat L${index + 1}`}
+                                              alt={`Seat J${index + 1}`}
                                               onClick={() =>
-                                                handleClick(`L${index + 1}`)
+                                                handleClick(`J${index + 1}`)
                                               }
                                             />
                                           </div>
                                         </td>
                                       ))}
-                                      <td id="l1">L</td>
+                                      <td id="J1">J</td>
                                     </tr>
+                                    
                                   </tbody>
                                 </table>
                               </div>
@@ -680,12 +622,7 @@ function ChonGhe() {
                                 <Link to="/chontime">← Trở lại</Link>
                               </div>
 
-                              <CountDownTimer
-                                duration={240}
-                                colors={["#a20000"]}
-                                colorValues={[20, 10]}
-                                onComplete={handleOnComplete}
-                              />
+                             
                             </div>
                           </div>
                         </div>

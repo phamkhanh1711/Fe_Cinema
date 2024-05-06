@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CheckError from "./CheckError";
-
+import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -139,16 +139,25 @@ function Register() {
         .then((res) => {
           console.log(res);
 
+            
           // localStorage.setItem('Token', JSON.stringify(Token));
 
-          if (res.data.error) {
-            setErrors(res.data.error);
-          } else {
-            navigate("/login");
-          }
+          Swal.fire({
+            title: "Success!",
+            text: res.data.message,
+            icon: "success",
+          });
+          navigate("/login");
         })
-        .catch((error) => {
-          console.log(error);
+        .catch((response) => {
+          console.log(response);
+          Swal.fire({
+            title: "Error!",  
+            text: response.response.data.message,
+            icon: "error",
+
+          });
+
         });
     }
   }
