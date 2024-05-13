@@ -18,44 +18,73 @@ function ChonDoAn() {
   }, []);
 
   const [itemQuantities, setItemQuantities] = useState({});
+  console.log("itemQuantities", itemQuantities);
+  
   const [foods, setFoods] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  const handleIncrease = (itemId) => {
-    setItemQuantities((prevQuantities) => {
-      const newQuantity = (prevQuantities[itemId] || 0) + 1;
-      console.log("Số lượng hiện tại của", itemId, ":", newQuantity);
-      return {
-        ...prevQuantities,
-        [itemId]: newQuantity,
-      };
-    });
-  };
+  const handleIncrease = (itemId, foodName, foodPrice) => {
+  setItemQuantities((prevQuantities) => {
+    const newQuantity = (prevQuantities[itemId] || 0) + 1;
+    const newFoodPrice = foodPrice * newQuantity; // Tính giá mới
 
-  const handleDecrease = (itemId) => {
-    console.log("Decrease item", itemId);
+    // Lấy thông tin từ localStorage
+    const menuData = JSON.parse(localStorage.getItem("menu")) || {};
+
+    // Tạo một đối tượng mới chứa thông tin từ cả seat và food
+    const newData = {
+      ...menuData,
+      [itemId]: {
+        ...menuData[itemId],
+        foodId: itemId,
+        foodName: foodName,
+        foodPrice: foodPrice,
+        quantity: newQuantity,
+      },
+      
+    };
+
+    // Lưu lại đối tượng mới vào localStorage
+    localStorage.setItem("menu", JSON.stringify(newData));
+
+    return {
+      ...prevQuantities,
+      [itemId]: newQuantity,
+    };
+  });
+};
+
+  
+  
+  
+  const handleDecrease = (itemId, foodName, foodPrice) => {
     if (itemQuantities[itemId] > 0) {
       setItemQuantities((prevQuantities) => {
-        const newQuantity = prevQuantities[itemId] - 1;
+        const newQuantity = (prevQuantities[itemId] || 0) - 1;
         console.log("Số lượng hiện tại của", itemId, ":", newQuantity);
+        console.log("Tên đồ ăn: ", foodName);
+        console.log("Giá tiền: ", foodPrice);
+
+        // Get the existing menu data from local storage
+        let menuData = JSON.parse(localStorage.getItem("menu")) || {};
+
+        // Update the quantity for the selected food item
+        menuData[itemId] = {
+          foodId: itemId,
+          foodName: foodName,
+          foodPrice: foodPrice,
+          quantity: newQuantity,
+        };
+
+        // Save the updated menu data back to local storage
+        localStorage.setItem("menu", JSON.stringify(menuData));
+
         return {
           ...prevQuantities,
           [itemId]: newQuantity,
         };
       });
     }
-  };
-
-
-
-  const handleOnComplete = () => {
-    Swal.fire({
-      position: "top-end",
-      icon: "success",
-      title: "Hết Thời Gian Mua Vé",
-      showConfirmButton: false,
-      timer: 1500,
-    });
   };
 
   useEffect(() => {
@@ -70,6 +99,8 @@ function ChonDoAn() {
       });
   }, []);
   const renderFoods = () => {
+    const menuCost = JSON.parse(localStorage.getItem("menu"));
+   console.log("menuCost", menuCost);
     return foods.map((food) => {
       return (
         <div
@@ -78,10 +109,7 @@ function ChonDoAn() {
           <div className="icon-box-img" style={{ width: "80px" }}>
             <div className="icon">
               <div className="icon-inner">
-                <img
-                  src="https://booking.bhdstar.vn/CDN/media/entity/get/ItemGraphic/662279?width=160&height=160&referenceScheme=HeadOffice&allowPlaceHolder=true"
-                  alt="Product"
-                />
+                <img src={food.foodImage} alt="Product" />
               </div>
             </div>
           </div>
@@ -90,9 +118,10 @@ function ChonDoAn() {
             <div className="stack stack-row justify-between items-center">
               <div className="quantity">
                 <span
-               
                   className="minus"
-                  onClick={() => handleDecrease(food.foodId)}>
+                  onClick={() =>
+                    handleDecrease(food.foodId, food.foodName, food.foodPrice)
+                  }>
                   -
                 </span>
                 <span className="number">
@@ -100,18 +129,141 @@ function ChonDoAn() {
                 </span>
                 <span
                   className="plus"
-                  onClick={() => handleIncrease(food.foodId)}>
+                  onClick={() =>
+                    handleIncrease(food.foodId, food.foodName, food.foodPrice)
+                  }>
                   +
                 </span>
               </div>
-              <span className="price">
-    {(itemQuantities[food.foodId] || 0) * food.foodPrice} VND
-  </span>            
+              
             </div>
           </div>
         </div>
       );
     });
+  };
+
+  const renderMenu = () => {
+    const menuData = JSON.parse(localStorage.getItem("shows"));
+    const menuCost = JSON.parse(localStorage.getItem("menu"));
+    console.log("menuCost", menuCost);
+
+    function totalAmount(menuCost, itemQuantities) {
+      return Object.keys(menuCost).reduce((total, key) => {
+        const quantity = itemQuantities[menuCost[key].foodId] || 0;
+        const price = menuCost[key].price || 0;
+        const foodPrice = quantity !== 0 ? menuCost[key].foodPrice || 0 : 0; // Sử dụng toán tử ba ngôi để đảm bảo rằng khi quantity = 0 thì foodPrice cũng bằng 0
+        return total + foodPrice + price;
+      }, 0);
+    }
+    const totalPrice = totalAmount(menuCost, itemQuantities);
+    console.log("totalPrice", totalPrice);
+
+    localStorage.setItem("Total", JSON.stringify(totalPrice));
+    return (
+      <div className="col-12 col-md-12 col-lg-4">
+        <div className="col-inner">
+          <div className="c-box film-cart film-item" style={{}}>
+            <h4 className="cinema-title">BHD Star Le Van Viet</h4>
+            <span className="session-info">
+              <span className="screen">Screen {menuData[0].cinemaHallId}</span>-{" "}
+              {menuData[0].CreateOn} - Suất chiếu: {menuData[0].startTime}
+            </span>
+            <hr />
+            <h3 className="film-title">{menuData[0].movieName}</h3>
+            <div className="metaaa">
+              <span className="age-limit T18">T18</span>
+              <span className="type">Phụ đề</span>
+              <span className="format">{menuData[0].typeName}</span>
+            </div>
+
+            {menuCost ? (
+              <>
+                {Object.values(menuCost).some((item) => item.quantity !== 0) ? (
+                  <table className="cart-items">
+                    <tbody>
+                      {Object.keys(menuCost).map(
+                        (key) =>
+                          menuCost[key].quantity !== 0 && (
+                            <tr key={key}>
+                              <td className="title">
+                                <>
+                                  <span className="quantity">
+                                    {menuCost[key].quantity}
+                                  </span>
+                                  &nbsp;
+                                  <span>x</span>&nbsp;
+                                  <span className="name">
+                                    {menuCost[key].numberSeat}
+                                  </span>
+                                  <span className="name">
+                                    {menuCost[key].foodName}
+                                  </span>
+                                </>
+                                <br />
+                              </td>
+
+                              <td
+                                className="price"
+                                style={{ fontWeight: "bold" }}>
+                                {menuCost[key].price}
+                                {menuCost[key].foodPrice}
+                                VND
+                              </td>
+                            </tr>
+                          )
+                      )}
+                    </tbody>
+                  </table>
+                ) : null}
+
+                {Object.values(menuCost).some(
+                  (item) => item.quantity !== 0
+                ) ? null : (
+                  <span style={{ color: "red" }}>Vui lòng chọn ghế</span>
+                )}
+
+                <hr />
+
+                <table className="cart-total" style={{}}>
+                  <tbody>
+                    <tr>
+                      <td className="title">
+                        <span>Tổng tiền</span>
+                        <span
+                          className="is-xxsmall"
+                          style={{ display: "none" }}>
+                          (Đã bao gồm phụ thu)
+                        </span>
+                      </td>
+                      <td className="price">{totalPrice} VND</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div className="text-center" style={{ marginTop: "20px" }}>
+                  <div className="error-message" style={{ display: "none" }} />
+                  <Link
+                    to={{
+                      pathname: "/thanhtoan",
+                    }}
+                    className="button primary expand"
+                    style={{ marginBottom: "15px" }}>
+                    Thanh Toán (3/4)
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <span style={{ color: "red" }}>Vui lòng chọn ghế</span>
+            )}
+
+            <div style={{ marginBottom: "5px" }}>
+              <Link to="/chontime">← Trở lại</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -155,7 +307,9 @@ function ChonDoAn() {
                                 <div className="tab-content concession-items">
                                   <div className="concession-item">
                                     {renderFoods()}
-                                    <div className="total-price">Tổng giá: {totalPrice} VND</div>
+                                    <div className="total-price">
+                                      Tổng giá: {totalPrice} VND
+                                    </div>
                                   </div>
                                   {/* Add other concession items here */}
                                 </div>
@@ -165,88 +319,7 @@ function ChonDoAn() {
                         </div>
                       </div>
 
-                      <div className="col-12 col-md-12 col-lg-5">
-                        <div className="col-inner">
-                          <div className="c-box film-cart film-item" style={{}}>
-                            <h4 className="cinema-title">
-                              BHD Star Le Van Viet
-                            </h4>
-                            <span className="session-info">
-                              <span className="screen">Screen 6</span> -
-                              4/3/2024 - Suất chiếu: 23h30
-                            </span>
-                            <hr />
-                            <h3 className="film-title">MAI</h3>
-                            <div className="metaaa">
-                              <span className="age-limit T18">T18</span>
-                              <span className="type">Phụ đề</span>
-                              <span className="format">2D</span>
-                            </div>
-
-                            <table className="cart-items">
-                              <tbody>
-                                <tr>
-                                  <td className="title">
-                                    <span className="quantity">1</span>&nbsp;
-                                    <span>x</span>&nbsp;
-                                    <span className="name">
-                                      Adult-VIP-2D-ES
-                                    </span>
-                                    <br />
-                                    <span className="description">J16</span>
-                                  </td>
-                                  <td className="price">75.000 VND</td>
-                                </tr>
-                                <td class="title">
-                                  <span class="quantity">1</span>&nbsp;
-                                  <span>x</span>&nbsp;
-                                  <span class="name">
-                                    OL Special Combo1 Bap nam Ga Lac (Sweet)
-                                  </span>
-                                  <span class="description"></span>
-                                </td>
-                                <td class="price">135.000&nbsp;VND</td>
-                              </tbody>
-                            </table>
-
-                            <hr />
-
-                            <table className="cart-total" style={{}}>
-                              <tbody>
-                                <tr>
-                                  <td className="title">
-                                    <span>Tổng tiền</span>
-                                    <span
-                                      className="is-xxsmall"
-                                      style={{ display: "none" }}>
-                                      (Đã bao gồm phụ thu)
-                                    </span>
-                                  </td>
-                                  <td className="price">70.000 VND</td>
-                                </tr>
-                              </tbody>
-                            </table>
-
-                            <div
-                              className="text-center"
-                              style={{ marginTop: "20px" }}>
-                              <div
-                                className="error-message"
-                                style={{ display: "none" }}
-                              />
-                              <Link
-                                to="/thanhtoan"
-                                className="button primary expand"
-                                style={{ marginBottom: "15px" }}>
-                                Chọn đồ ăn (3/4)
-                              </Link>
-                              <div style={{ marginBottom: "5px" }}>
-                                <Link to="/chonghe">← Trở lại</Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      {renderMenu()}
                     </div>
                   </div>
                 </div>

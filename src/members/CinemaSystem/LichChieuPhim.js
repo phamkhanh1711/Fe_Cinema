@@ -67,12 +67,24 @@ function LichChieuPhim() {
   }
 
   const [getData, setData] = useState([]);
+  const [getMovie, setMovie] = useState([]);
   useEffect(() => {
     axios
       .get("http://localhost:4000/movie/all-current-movie")
       .then((res) => {
         console.log(res);
         setData(res.data.allCurrentMovie);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+  useEffect(() => {
+    axios
+      .get("http://localhost:4000/movie/all-upcoming-movie")
+      .then((res) => {
+        console.log(res);
+        setMovie(res.data.allUpcomingMovie);
       })
       .catch((err) => {
         console.log(err);

@@ -309,7 +309,7 @@ function Register() {
                                     </p>
                                   </div>
                                 </div>
-<div className="col-inner">
+ <div className="col-inner">
   <p>
     <label htmlFor="reg_last_name">
       Role <span className="required">*</span>
@@ -319,7 +319,7 @@ function Register() {
     </select>
     {errors.role && <span className="text-danger">{errors.role}</span>}
   </p>
-</div>
+</div>  
                                 <button
                                   className="sc-eDWCr gyTwqg mt-2"
                                   type="submit">

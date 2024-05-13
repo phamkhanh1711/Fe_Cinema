@@ -19,6 +19,7 @@ import Hethongrap from "./pages/Hethongrap";
 import Detail from "./members/CinemaSystem/Detail";
 import Comment from "./members/CinemaSystem/Comment";
 import ListComment from "./members/CinemaSystem/ListComment";
+import Bill from "./members/CinemaSystem/Bill";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -39,6 +40,8 @@ root.render(
         <Route index path="/listcomment" element={<ListComment/>} />
         <Route index path="/khuyenmai" element={<Khuyenmai />} />
         <Route index path="/hethongrap" element={<Hethongrap />} />
+        <Route index path="/bill" element={<Bill />} />
+
       </Routes>
     </App>
   </Router>

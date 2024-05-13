@@ -3530,3 +3530,6 @@ td.text-right {
   border-radius: 10px; /* Điều chỉnh bo góc theo nhu cầu */
   margin-bottom: 20px; /* Điều chỉnh khoảng cách giữa các phần tử */
 }
+.img-disabled {
+  pointer-events: none;
+}

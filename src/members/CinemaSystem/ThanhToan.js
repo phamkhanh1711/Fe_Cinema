@@ -3,6 +3,8 @@ import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import Aos from "aos";
 import "aos/dist/aos.css";
+import axios from "axios";
+import Cookies from "js-cookie";
 function ThanhToan() {
   useEffect(() => {
     Aos.init();
@@ -16,6 +18,203 @@ function ThanhToan() {
       setFirst(!first);
     }
   };
+
+  const [itemQuantities, setItemQuantities] = useState({});
+  const renderMenu = () => {
+
+    const menuData = JSON.parse(localStorage.getItem("shows"));
+    const menuCost = JSON.parse(localStorage.getItem("menu"));
+    const menuTotal = JSON.parse(localStorage.getItem("total"));
+    const total = JSON.parse(localStorage.getItem("Total"));
+    console.log(
+      total
+    );
+    const seatIds = Object.keys(menuCost).map((key) => menuCost[key].seatId);
+
+
+const seat = seatIds.filter((id) => id !== undefined);
+console.log(seat);
+    
+const foodIds = Object.keys(menuCost).map((key) => menuCost[key].foodId);
+const filteredFoodIds = foodIds.filter((id) => id !== undefined);
+    
+
+const food = filteredFoodIds.reduce((acc, id) => {
+  const qty = menuCost[id].quantity || 0; // Lấy quantity từ menuCost hoặc gán mặc định là 0 nếu không có
+  return {
+    ...acc,
+    [id]: qty
+  };
+}, {});
+
+console.log(food);
+
+
+
+
+    Object.keys(menuData).map((key) => {
+      const showIds = Object.keys(menuData).map((key) => menuData[key].showId);
+
+      console.log(showIds); // In ra mảng các seatId
+    });
+    // Object.keys(menuCost).map((key) => {
+    //   console.log("key", key);
+    //    let seatID= menuCost[key].seatId;
+    //   console.log( "seatID",seatID);
+    // });
+
+    const handlepayment = () => {
+      const token = Cookies.get("Token");
+      if (!token) {
+        console.log("Token not found. Please log in.");
+        return;
+      }
+    
+      const bookingData = {
+        showId: menuData[0].showId, // Đảm bảo rằng menuData chứa dữ liệu hợp lệ
+        seat: seat, // Kiểm tra xem biến seat có chứa dữ liệu hợp lệ không
+        food: food, // Kiểm tra xem biến food có chứa dữ liệu hợp lệ không
+        totalPrice: total, // Đảm bảo rằng total đã được tính toán đúng
+      };
+      localStorage.setItem("booking", JSON.stringify(bookingData));
+      const vnpay = {
+        amount: Number(total),
+        bankCode: "VNBANK",
+        language: "vn",
+      }
+      console.log(vnpay);
+      // Kiểm tra xem các trường dữ liệu cần thiết đã được điền đầy đủ hay chưa
+      if (!bookingData.showId || !bookingData.seat || !bookingData.food || !bookingData.totalPrice) {
+        console.error("Missing required data for booking.");
+        return;
+      }
+    let url = "http://localhost:4000/payment/create-payment-url";
+      
+    
+      axios.post(url, vnpay)
+        .then((response) => {
+          console.log(response);
+          if (response.data.data.vnpUrl) {
+            window.location.href = response.data.data.vnpUrl;
+          }
+          
+        })
+        .catch((error) => {
+          console.error("Error creating booking:", error);
+          alert("Đã xảy ra lỗi khi đặt vé. Vui lòng thử lại sau.");
+        });
+    };
+    
+      return (
+        <div className="col-12 col-md-12 col-lg-4">
+        <div className="col-inner">
+          <div className="c-box film-cart film-item" style={{}}>
+            <h4 className="cinema-title">
+              BHD Star Le Van Viet
+            </h4>
+            <span className="session-info">
+              <span className="screen">Screen {menuData[0].cinemaHallId}</span> -
+              {menuData[0].CreateOn} - Suất chiếu: {menuData[0].startTime}
+            </span>
+            <hr />
+            <h3 className="film-title">{menuData[0].movieName}</h3>
+            <div className="metaaa">
+              <span className="age-limit T18">T18</span>
+              <span className="type">Phụ đề</span>
+              <span className="format">{menuData[0].typeName}</span>
+            </div>
+            {menuCost ? (
+              <>
+                {Object.values(menuCost).some((item) => item.quantity !== 0) ? (
+                  <table className="cart-items">
+                    <tbody>
+                      {Object.keys(menuCost).map(
+                        (key) =>
+                          menuCost[key].quantity !== 0 && (
+                            <tr key={key}>
+                              <td className="title">
+                                <>
+                                  <span className="quantity">
+                                    {menuCost[key].quantity}
+                                  </span>
+                                  &nbsp;
+                                  <span>x</span>&nbsp;
+                                  <span className="name">
+                                    {menuCost[key].numberSeat}
+                                  </span>
+                                  <span className="name">
+                                    {menuCost[key].foodName}
+                                  </span>
+                                </>
+                                <br />
+                              </td>
+
+                              <td
+                                className="price"
+                                style={{ fontWeight: "bold" }}>
+                                {menuCost[key].price}
+                               
+                                 { menuCost[key].foodPrice}
+                                VND
+                              </td>
+                            </tr>
+                          )
+                      )}
+                    </tbody>
+                  </table>
+                ) : null}
+
+                {Object.values(menuCost).some(
+                  (item) => item.quantity !== 0
+                ) ? null : (
+                  <span style={{ color: "red" }}>Vui lòng chọn ghế</span>
+                )}
+
+                <hr />
+
+                <table className="cart-total" style={{}}>
+                  <tbody>
+                    <tr>
+                      <td className="title">
+                        <span>Tổng tiền</span>
+                        <span
+                          className="is-xxsmall"
+                          style={{ display: "none" }}>
+                          (Đã bao gồm phụ thu)
+                        </span>
+                      </td>
+                      <td className="price">{total} VND</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div className="text-center" style={{ marginTop: "20px" }}>
+                  <div className="error-message" style={{ display: "none" }} />
+                  <Link
+                  onClick={handlepayment}
+                    to={{
+                      pathname: "/thanhtoan",
+                    }}
+                    className="button primary expand"
+                    style={{ marginBottom: "15px" }}>
+                    Thanh Toán (4/4)
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <span style={{ color: "red" }}>Vui lòng chọn ghế</span>
+            )}
+            
+              <div style={{ marginBottom: "5px" }}>
+                <Link to="/chondoan">← Trở lại</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+      )
+  }
+
   return (
     <>
       <div id="col-1063932164" className="col small-12 large-12">
@@ -116,91 +315,7 @@ function ThanhToan() {
                         </div>
                       </div>
 
-                      <div className="col-12 col-md-12 col-lg-4">
-                        <div className="col-inner">
-                          <div className="c-box film-cart film-item" style={{}}>
-                            <h4 className="cinema-title">
-                              BHD Star Le Van Viet
-                            </h4>
-                            <span className="session-info">
-                              <span className="screen">Screen 6</span> -
-                              4/3/2024 - Suất chiếu: 23h30
-                            </span>
-                            <hr />
-                            <h3 className="film-title">MAI</h3>
-                            <div className="metaaa">
-                              <span className="age-limit T18">T18</span>
-                              <span className="type">Phụ đề</span>
-                              <span className="format">2D</span>
-                            </div>
-
-                            <table className="cart-items">
-                              <tbody>
-                                <tr>
-                                  <td className="title">
-                                    <span className="quantity">1</span>&nbsp;
-                                    <span>x</span>&nbsp;
-                                    <span className="name">
-                                      Adult-VIP-2D-ES
-                                    </span>
-                                    <br />
-                                    <span className="description">J16</span>
-                                  </td>
-                                  <td className="price">75.000 VND</td>
-                                </tr>
-                                <td class="title">
-                                  <span class="quantity">1</span>&nbsp;
-                                  <span>x</span>&nbsp;
-                                  <span class="name">
-                                    OL Special Combo1 Bap nam Ga Lac (Sweet)
-                                  </span>
-                                  <span class="description"></span>
-                                </td>
-                                <td class="price">135.000&nbsp;VND</td>
-                              </tbody>
-                            </table>
-
-                            <hr />
-
-                            <table className="cart-total" style={{}}>
-                              <tbody>
-                                <tr>
-                                  <td className="title">
-                                    <span>Tổng tiền</span>
-                                    <span
-                                      className="is-xxsmall"
-                                      style={{ display: "none" }}
-                                    >
-                                      (Đã bao gồm phụ thu)
-                                    </span>
-                                  </td>
-                                  <td className="price">70.000 VND</td>
-                                </tr>
-                              </tbody>
-                            </table>
-
-                            <div
-                              className="text-center"
-                              style={{ marginTop: "20px" }}
-                            >
-                              <div
-                                className="error-message"
-                                style={{ display: "none" }}
-                              />
-                              <Link
-                                to="/thanhtoan"
-                                className="button primary expand"
-                                style={{ marginBottom: "15px" }}
-                              >
-                                Thanh Toán (4/4)
-                              </Link>
-                              <div style={{ marginBottom: "5px" }}>
-                                <Link to="/chondoan">← Trở lại</Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                        {renderMenu()}
                     </div>
                   </div>
                 </div>
