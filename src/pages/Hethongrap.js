@@ -8,6 +8,10 @@ function Hethongrap() {
   useEffect(() => {
     Aos.init();
   }, []);
+  useEffect(() => {
+    // Sau khi trang đã được tải lại, cuộn về đầu trang
+    window.scrollTo(0, 0);
+  }, []);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setLoading(true);
@@ -18,7 +22,7 @@ function Hethongrap() {
   return (
     <div>
       {loading ? (
-        <CircularProgress />
+        <CircularProgress className="loading"/>
       ) : (
         <div id="col-1063932164" class="col small-12 large-12">
           <div class="col-inner1 text-center">

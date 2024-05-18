@@ -952,6 +952,7 @@ a {
   z-index: 1; /* Đảm bảo .dMekse.right nằm trên hình ảnh */
 }
 .dMekse.right.show {
+  margin-right: 5.4%;
   opacity: 1;
   visibility: visible;
   padding-left: 16px; /* Dịch chuyển biểu tượng sang phải */
@@ -3532,4 +3533,46 @@ td.text-right {
 }
 .img-disabled {
   pointer-events: none;
+}
+.loading{
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.img-fluid{
+  width: 50%; /* Độ rộng ảnh sẽ chiếm 30% của phần tử chứa nó */
+  height: auto; /* Chiều cao tự động điều chỉnh tương ứng để giữ tỉ lệ hình ảnh */
+  display: block; 
+}
+.showtime-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px; /* khoảng cách giữa các phần tử */
+}
+
+.show-item {
+  background-color: #454d6a; /* màu nền tùy chọn */
+  padding: 16px; /* padding tùy chọn */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* box-shadow tùy chọn */
+  border-radius: 8px; /* border-radius tùy chọn */
+}
+
+/* Đảm bảo rằng các phần tử bên trong show-item được căn chỉnh đúng */
+.show-inner {
+  text-align: center;
+}
+
+.time {
+  font-size: 1.2em;
+  margin-bottom: 8px;
+}
+
+.meta .type,
+.meta .format,
+.meta .first-class {
+  display: block;
+  margin: 4px 0;
+  
 }

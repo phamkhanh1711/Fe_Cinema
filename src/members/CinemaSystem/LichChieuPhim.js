@@ -19,7 +19,8 @@ import Aos from "aos";
 import { Button } from "@mui/material";
 import "aos/dist/aos.css";
 import axios from "axios";
-import { BsTicketDetailedFill } from "react-icons/bs";
+
+
 function LichChieuPhim() {
   const [loading, setLoading] = useState(true);
   const [GotoTop, setGotoTop] = useState(false);
@@ -98,7 +99,7 @@ function LichChieuPhim() {
   return (
     <>
       {loading ? (
-        <CircularProgress />
+        <CircularProgress className="loading" />
       ) : (
         <div>
           <div id="col-1063932164" class="col small-12 large-12">
@@ -107,8 +108,11 @@ function LichChieuPhim() {
                 <h2 id="p1">Vé bán trước</h2>
               </div>
             </div>
-          </div>
-
+          </div>    
+ {/* <Slide style={{width:"50%" ,height:"20%"}}>
+            <SliderComp/>
+        </Slide>
+            */}
           <div className="row large-columns-2 medium-columns-2 small-columns-1">
             <div id="col-1675063463" class="col small-12 large-12">
               <div className="col-inner">
@@ -979,8 +983,11 @@ function LichChieuPhim() {
               justifyContent: "center",
               alignItems: "center",
             }}>
-            <Grid container spacing={5} sx={{ maxWidth: "1300px" , marginLeft:"13%" }}>
-              {getData.map((movie,index) => (
+            <Grid
+              container
+              spacing={5}
+              sx={{ maxWidth: "1300px", marginLeft: "13%" }}>
+              {getData.map((movie, index) => (
                 <Grid
                   key={movie.id}
                   item
@@ -996,9 +1003,8 @@ function LichChieuPhim() {
                     direction="column"
                     spacing={2}
                     alignItems="center"
-                    style={{ margin: "0 auto", maxWidth: "250px" }}
-                    >
-                    <Avatar
+                    style={{ margin: "0 auto", maxWidth: "250px" }}>
+                    <img
                       src={movie.movieImage}
                       sx={{ width: 250, height: 300, borderRadius: "4%" }}
                     />
@@ -1044,11 +1050,11 @@ function LichChieuPhim() {
                     <Typography
                       variant="h6"
                       sx={{
-                          width: "100%",
+                        width: "100%",
                         color: "white",
                         fontWeight: "bold",
-                          fontSize: "14px",
-                          marginRight:"20px"
+                        fontSize: "14px",
+                        marginRight: "20px",
                       }}>
                       {movie.movieName}
                     </Typography>
@@ -1075,21 +1081,27 @@ function LichChieuPhim() {
                     </Typography>
 
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <Button variant="contained" className="custom-button" onClick={()=>handlepay(movie.movieId)}>
+                      <Button
+                        variant="contained"
+                        className="custom-button"
+                        onClick={() => handlepay(movie.movieId)}>
                         <span style={{ fontSize: "13px", fontWeight: "bold" }}>
                           Mua vé ngay
                         </span>
                       </Button>
-                      <BsTicketDetailedFill
-
-onClick={() => handleDetail(movie.movieId)}
-
+                               
+                            <a    className="button secondary is-small info-button"
+                        onClick={() => handleDetail(movie.movieId)}
                         style={{
-                          fontSize: "25px",
+                          marginTop: "0%",
+                          fontSize: "16px",
                           color: "white",
-                          marginLeft: "20px",
-                        }}
-                      />
+                          marginLeft: "22px",
+                        }}>
+<span></span>
+                            </a>
+                      
+                      
                     </div>
                   </Stack>
                 </Grid>
@@ -2527,21 +2539,3 @@ onClick={() => handleDetail(movie.movieId)}
 
 export default LichChieuPhim;
 
-// function handleDetail(event) {
-//   // Tìm phần tử cha chứa thông tin chi tiết của phim được nhấp vào
-//   const parent = event.target.closest(".film-item");
-
-//   // Hiển thị overlay và nội dung chi tiết của phim được chọn
-//   parent.querySelector(".overlay").style.display = "block";
-//   parent.querySelector(".detail-content").style.display = "block";
-//    navigate("/comment");
-// }
-
-// function closeDetail(event) {
-//   // Tìm phần tử cha chứa thông tin chi tiết của phim
-//   const parent = event.target.closest(".film-item");
-
-//   // Ẩn overlay và nội dung chi tiết của phim
-//   parent.querySelector(".overlay").style.display = "none";
-//   parent.querySelector(".detail-content").style.display = "none";
-// }

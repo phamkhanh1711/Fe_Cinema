@@ -19,7 +19,10 @@ function ChonGhe() {
   useEffect(() => {
     Aos.init();
   }, []);
-
+  useEffect(() => {
+    // Sau khi trang đã được tải lại, cuộn về đầu trang
+    window.scrollTo(0, 0);
+  }, []);
   const [selectedImage, setSelectedImage] = useState(ghethuong);
 
   const images = [ghedachon, ghethuong];
@@ -32,65 +35,72 @@ function ChonGhe() {
 
   const handleClick = (seatId, seatKey, price, number) => {
     // Check if the seat is currently selected
-    let isSelected = selectedSeats[seatKey] ; // Default to false if seatKey is not found
+    let isSelected = selectedSeats[seatKey] || false; // Default to false if seatKey is not found
 
     console.log("isSelected", isSelected);
     let xx = localStorage.getItem("menu");
     let obj = {};
     let a = 1;
     if (xx) {
-      obj = JSON.parse(xx);
-      Object.keys(obj).forEach(function (key) {
-        if (obj[key].seatId === seatId) {
-          if (!isSelected) { // If the seat is not currently selected
-            // If the seat is selected, set the quantity to 1
-            obj[key].quantity = 1;
-          } else {
-            // If the seat is deselected, decrease the quantity only if it's greater than 0
-            if (obj[key].quantity > 0) {
-              obj[key].quantity -= 1;
+        obj = JSON.parse(xx);
+        Object.keys(obj).forEach(function (key) {
+            if (obj[key].seatId === seatId) {
+                if (!isSelected) { // If the seat is not currently selected
+                    obj[key].quantity = 1;
+                } else {
+                    if (obj[key].quantity > 0) {
+                        obj[key].quantity -= 1;
+                    }
+                    if (obj[key].quantity === 0) {
+                        delete obj[key];
+                    }
+                }
+                a = 2;
             }
-            // If the quantity becomes 0, remove the seat from selection
-            if (obj[key].quantity === 0) {
-              delete obj[key];
-            }
-          }
-          a = 2;
-        }
-      });
+        });
     }
 
-    // If the seat was not found in localStorage or was found but not in selectedSeats, add it with quantity 1
     if (a === 1) {
-      obj[seatId] = {
-        seatId: seatId,
-        quantity: 1,
-        price: price,
-        numberSeat: number,
-      };
+        obj[seatId] = {
+            seatId: seatId,
+            quantity: 1,
+            price: price,
+            numberSeat: number,
+        };
     }
 
     // Update selectedSeats state
     setSelectedSeats({
-      ...selectedSeats,
-      [seatKey]: !isSelected, // Toggle the selected state
+        ...selectedSeats,
+        [seatKey]: !isSelected, // Toggle the selected state
     });
+
+    // Save selectedSeats to localStorage
+    localStorage.setItem("selectedSeats", JSON.stringify({
+        ...selectedSeats,
+        [seatKey]: !isSelected, // Toggle the selected state
+    }));
 
     // Calculate total quantity
     let tongqty = Object.values(obj).reduce(
-      (total, item) => total + item.quantity,
-      0
+        (total, item) => total + item.quantity,
+        0
     );
 
-    // Update localStorage and state with new products and quantity
     localStorage.setItem("menu", JSON.stringify(obj));
     setNewProducts(obj);
     user.loginContext(tongqty);
     
     // Update selected image based on isSelected
-    setSelectedImage(isSelected ? ghedachon : ghethuong);
+    setSelectedImage(isSelected ? ghethuong : ghedachon);
 };
 
+useEffect(() => {
+  const savedSelectedSeats = localStorage.getItem("selectedSeats");
+  if (savedSelectedSeats) {
+      setSelectedSeats(JSON.parse(savedSelectedSeats));
+  }
+}, []);
 
 
   useEffect(() => {
@@ -98,11 +108,11 @@ function ChonGhe() {
       localStorage.removeItem("menu");
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    // window.addEventListener("beforeunload", handleBeforeUnload);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
+    // return () => {
+    //   window.removeEventListener("beforeunload", handleBeforeUnload);
+    // };
   }, []);
 
   const [seatJ, setSeatJ] = useState([{}]);
@@ -120,9 +130,16 @@ function ChonGhe() {
       });
   }, [params.showId]);
   const [itemQuantities, setItemQuantities] = useState({});
+
+  const handle = () => {
+
+  }
+
   const renderMenu = () => {
     const menuData = JSON.parse(localStorage.getItem("shows"));
     const menuCost = JSON.parse(localStorage.getItem("menu"));
+
+    
 
     const total = JSON.parse(localStorage.getItem("Total"));
 
@@ -134,11 +151,16 @@ function ChonGhe() {
     function totalAmount(menuCost, itemQuantities) {
       return Object.keys(menuCost).reduce((total, key) => {
         const quantity = itemQuantities[menuCost[key].foodId] || 0;
+        console.log("quantity", quantity);
         const price = menuCost[key].price || 0;
-        const storedFoodPrice = menuCost[key].foodPrice || 0; // Lấy giá trị foodPrice từ localStorage
-        const foodPrice = quantity !== 0 ? storedFoodPrice : 0; // Sử dụng toán tử ba ngôi để đảm bảo rằng khi quantity = 0 thì foodPrice cũng bằng 0
+        console.log("price", price);
+        const storedFoodPrice = menuCost[key].foodPrice || 0; 
+        console.log("storedFoodPrice",storedFoodPrice);// Lấy giá trị foodPrice từ localStorage
+        const foodPrice = quantity !== 0 ? storedFoodPrice : 0; 
+        console.log("foodPrice",foodPrice);// Sử dụng toán tử ba ngôi để đảm bả  o rằng khi quantity = 0 thì foodPrice cũng bằng 0
         return total + foodPrice + price;
       }, 0);
+      
     }
     
     const totalPrice = totalAmount(menuCost, itemQuantities);
@@ -250,7 +272,7 @@ function ChonGhe() {
             )}
 
             <div style={{ marginBottom: "5px" }}>
-              <Link to="/chontime">← Trở lại</Link>
+              <a onClick={()=> handle()}>← Trở lại</a>
             </div>
           </div>
         </div>
@@ -497,26 +519,25 @@ function ChonGhe() {
           seat[key].map((seatItem, index) => (
             <td key={`${key}${index + 1}`} colSpan={1}>
               <div className="stack stack-row justify-center items-center">
-              <img
-  src={
-    selectedSeats[`${key}${index + 1}`]
-      ? ghedachon
-      : seatItem.isBooked
-      ? ghedaban
-      : ghethuong
-  }
-  alt={`Seat ${key}${index + 1}`}
-  onClick={() =>
-    handleClick(
-      seatItem.seatId,
-      `${key}${index + 1}`,
-      seatItem.priceSeat,
-      seatItem.Seat.numberSeat
-    )
-  }
-  className={seatItem.isBooked ? "img-disabled" : ""}
-/>
-
+                <img
+                  src={
+                    selectedSeats[`${key}${index + 1}`]
+                      ? ghedachon
+                      : seatItem.isBooked
+                      ? ghedaban
+                      : ghethuong
+                  }
+                  alt={`Seat ${key}${index + 1}`}
+                  onClick={() =>
+                    handleClick(
+                      seatItem.seatId,
+                      `${key}${index + 1}`,
+                      seatItem.priceSeat,
+                      seatItem.Seat.numberSeat
+                    )
+                  }
+                  className={seatItem.isBooked ? "img-disabled" : ""}
+                />
               </div>
             </td>
           ))
@@ -529,50 +550,53 @@ function ChonGhe() {
   }
 })}
 
+<tr>
+  <td>J</td>
+  {seatJ.map((seat, index) => (
+    <td key={`J${index + 1}`} colSpan={2}>
+      <div className="stack2 stack-row justify-center items-center">
+        <img
+          src={
+            selectedSeats[`J${index + 1}`]
+              ? ghedachon
+              : seat.isBooked
+              ? ghedaban
+              : ghedoi
+          }
+          alt={`Seat J${index + 1}`}
+          onClick={() =>
+            handleClick(
+              seat.seatId,
+              `J${index + 1}`,
+              seat.priceSeat,
+              seat.Seat.numberSeat
+            )
+          }
+        />
+        <img
+          src={
+            selectedSeats[`J${index + 1}`]
+            ? ghedachon
+            : seat.isBooked
+            ? ghedaban
+            : ghedoi
+          }
+          alt={`Seat J${index + 1}`}
+          onClick={() =>
+            handleClick(
+              seat.seatId,
+              `J${index + 1}`,
+              seat.priceSeat,
+              seat.Seat.numberSeat
+            )
+          }
+        />
+      </div>
+    </td>
+  ))}
+  <td id="J1">J</td>
+</tr>
 
-
-                                    <tr>
-                                      <td>J</td>
-                                      {seatJ.map((seat, index) => (
-                                        <td key={`J${index + 1}`} colSpan={2}>
-                                          <div className="stack2 stack-row justify-center items-center">
-                                            <img
-                                              src={
-                                                selectedSeats[`J${index + 1}`]
-                                                  ? ghedachon
-                                                  : ghedoi
-                                              }
-                                              alt={`Seat J${index + 1}`}
-                                              onClick={() =>
-                                                handleClick(
-                                                  seat.seatId,
-                                                  `J${index + 1}`,
-                                                  seat.priceSeat,
-                                                  seat.Seat.numberSeat
-                                                )
-                                              }
-                                            />
-                                            <img
-                                              src={
-                                                selectedSeats[`J${index + 1}`]
-                                                  ? ghedachon
-                                                  : ghedoi
-                                              }
-                                              alt={`Seat J${index + 1}`}
-                                              onClick={() =>
-                                                handleClick(
-                                                  seat.seatId,
-                                                  `J${index + 1}`,
-                                                  seat.priceSeat,
-                                                  seat.Seat.numberSeat
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                        </td>
-                                      ))}
-                                      <td id="J1">J</td>
-                                    </tr>
                                   </tbody>
                                 </table>
                               </div>

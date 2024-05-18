@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { Button } from "@mui/material";
+import { render } from "@testing-library/react";
 function TaiKhoan() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -187,16 +188,7 @@ const Info = () => {
             </div>
           </div>
 
-          <div className="col-md-12 col-sm-12 col-lg-8">
-            <div className="col-inner">
-              <p>
-                <label htmlFor="reg_last_name">
-                  Mật khẩu <span className="required">*</span>
-                </label>
-                <input id="reg_last_name" type="text" name="password"  value={user.password} onChange={handleInput}/>
-              </p>
-            </div>
-          </div>
+        
 
           <div className="col-md-12 col-sm-12 col-lg-12">
             <div className="col-inner">
@@ -213,7 +205,7 @@ const Info = () => {
             <div className="col-inner">
               
               <Button onClick={handleSubmit} variant="contained" type="submit" sx={{ width: 200,height:25 , fontSize:"12px"}}>
-                    Edit user 
+                    Cập Nhật Tài Khoản
                 </Button>
              
             </div>
@@ -224,10 +216,90 @@ const Info = () => {
     );
   };
 
+
+  const [data, setData] = useState([]); 
+
+  const Token = Cookies.get("Token");
+  
+  useEffect(() => {
+    axios.get("http://localhost:4000/booking/user/allBooking",
+    {
+      headers: {
+        Authorization: `Bearer ${Token}`,
+      },
+    }
+    )
+    .then((response) => {
+     
+      console.log(response);
+      setData(response.data.data.getAllBooking);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  } 
+  , []);
+  const calculateTotalPrice = () => {
+    return data.reduce((acc, booking) => acc + booking.totalPrice, 0);
+  };
+
+  const renderDataHistory = () => {
+    return (
+      <div className="row align-items-center form-row">
+        <div className="col-md-12 col-sm-12 col-lg-8">
+          <h2 style={{ marginBottom: "0px" }}>Lịch sử giao dịch</h2>
+        </div>
+
+        <div className="table-container">
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <th className="text-center">STT</th>
+                <th className="text-center">Thời gian giao dịch</th>
+                <th className="text-center">Mã lấy vé</th>
+                <th className="text-left">Thông tin rạp</th>
+                <th className="text-right">Tổng tiền</th>
+                <th className="text-right">Điểm RP</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((booking, index) => (
+                <tr key={index}>
+                  <td className="text-center">{index + 1}</td>
+                  <td className="text-center">{booking.createOn}</td>
+                  <td className="text-center">{booking.bookingId}</td>
+                  <td className="text-center">
+                    {/* Thông tin rạp */}
+                    {/* Ví dụ: {booking.BookingTickets[0].Show.CinemaHall.cinemaHallName} */}
+                    1
+                  </td>
+                  <td className="text-right">{booking.totalPrice} VND</td>
+                  <td className="text-right">0</td>
+                </tr>
+              ))}
+              <tr>
+                <td className="text-right" colSpan={4}>
+                  <b>Tổng cộng</b>
+                </td>
+                <td className="text-right">
+                  <b>{calculateTotalPrice()} VND</b>
+                </td>
+                <td className="text-right">
+                  <b>0</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+    
+  };
+  
   return (
     <div>
       {loading ? (
-        <CircularProgress />
+        <CircularProgress className="loading"/>
       ) : (
         <div id="col-1063932164" className="col small-12 large-12">
           <div className="page-title-inner dark">
@@ -262,45 +334,7 @@ const Info = () => {
 
                         </div>
 
-                        <div classname="row align-items-center form-row">
-                          <div classname="col-md-12 col-sm-12 col-lg-8">
-                            <h2 style={{ marginBottom: "0px" }}>
-                              Lịch sử giao dịch
-                            </h2>
-                          </div>
-
-                          <div className="table-container">
-                            <table className="table table-bordered">
-                              <thead>
-                                <tr>
-                                  <th className="text-center">STT</th>
-                                  <th className="text-center">
-                                    Thời gian giao dịch
-                                  </th>
-                                  <th className="text-center">Mã lấy vé</th>
-                                  <th className="text-left">Thông tin rạp</th>
-                                  <th className="text-right">Tổng tiền</th>
-                                  <th className="text-right">Điểm RP</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td className="text-right" colSpan={4}>
-                                    <b>Tổng cộng</b>
-                                  </td>
-                                  <td className="text-right">
-                                    <span style={{ display: "none" }}>
-                                      <b>0 VND</b>
-                                    </span>
-                                  </td>
-                                  <td className="text-right">
-                                    <b>0</b>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
+                        {renderDataHistory()}
                       </div>
                     </div>
                   </div>

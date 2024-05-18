@@ -9,6 +9,7 @@ import { useCountdownContext } from "../../CountdownContext";
 import axios from "axios";
 import { useContext } from "react";
 import { UserContext } from "../../UserContext";
+import { useParams } from "react-router-dom";
 function ChonDoAn() {
   const user = useContext(UserContext);
   console.log(user);
@@ -23,70 +24,72 @@ function ChonDoAn() {
   const [foods, setFoods] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  const handleIncrease = (itemId, foodName, foodPrice) => {
-  setItemQuantities((prevQuantities) => {
-    const newQuantity = (prevQuantities[itemId] || 0) + 1;
-    const newFoodPrice = foodPrice * newQuantity; // Tính giá mới
+  const handleIncrease = (foodId, foodName, foodPrice) => {
+    console.log("foodId", foodId);
+    console.log("foodName", foodName);
+    console.log("foodPrice", foodPrice);
 
-    // Lấy thông tin từ localStorage
-    const menuData = JSON.parse(localStorage.getItem("menu")) || {};
+    let menuData = JSON.parse(localStorage.getItem("food")) || {};
 
-    // Tạo một đối tượng mới chứa thông tin từ cả seat và food
-    const newData = {
-      ...menuData,
-      [itemId]: {
-        ...menuData[itemId],
-        foodId: itemId,
-        foodName: foodName,
-        foodPrice: foodPrice,
-        quantity: newQuantity,
-      },
-      
-    };
+    if (menuData[foodId] && menuData[foodId].foodName) {
+        menuData[foodId].quantity += 1;
+        menuData[foodId].subtotal = menuData[foodId].quantity * foodPrice;
+    } else {
+        menuData[foodId] = {
+            foodId: foodId,
+            foodName: foodName,
+            foodPrice: foodPrice, 
+            quantity: 1,
+        };
+    }
 
-    // Lưu lại đối tượng mới vào localStorage
-    localStorage.setItem("menu", JSON.stringify(newData));
+    console.log(menuData);
 
-    return {
-      ...prevQuantities,
-      [itemId]: newQuantity,
-    };
-  });
+    let totalQuantity = Object.values(menuData).reduce((total, item) => total + (item.quantity || 0), 0);
+
+    user.loginContext(totalQuantity);
+    localStorage.setItem("food", JSON.stringify(menuData));
+
+    setItemQuantities(menuData);
 };
 
-  
-  
-  
-  const handleDecrease = (itemId, foodName, foodPrice) => {
-    if (itemQuantities[itemId] > 0) {
-      setItemQuantities((prevQuantities) => {
-        const newQuantity = (prevQuantities[itemId] || 0) - 1;
-        console.log("Số lượng hiện tại của", itemId, ":", newQuantity);
-        console.log("Tên đồ ăn: ", foodName);
-        console.log("Giá tiền: ", foodPrice);
+const handleDecrease = (itemId, foodName, foodPrice) => {
+    let menuData = JSON.parse(localStorage.getItem("food"));
 
-        // Get the existing menu data from local storage
-        let menuData = JSON.parse(localStorage.getItem("menu")) || {};
-
-        // Update the quantity for the selected food item
-        menuData[itemId] = {
-          foodId: itemId,
-          foodName: foodName,
-          foodPrice: foodPrice,
-          quantity: newQuantity,
-        };
-
-        // Save the updated menu data back to local storage
-        localStorage.setItem("menu", JSON.stringify(menuData));
-
-        return {
-          ...prevQuantities,
-          [itemId]: newQuantity,
-        };
-      });
+    if (!menuData[itemId]) {
+        return; // If the item doesn't exist, exit the function
     }
-  };
 
+    if (menuData[itemId].quantity === 1) {
+        delete menuData[itemId];
+    } else {
+        menuData[itemId].quantity -= 1;
+        menuData[itemId].subtotal = menuData[itemId].quantity * foodPrice;
+    }
+
+    let totalQuantity = Object.values(menuData).reduce((total, item) => total + (item.quantity || 0), 0);
+
+    user.loginContext(totalQuantity);
+    localStorage.setItem("food", JSON.stringify(menuData));
+
+    setItemQuantities(menuData);
+};
+
+  const[selectedSeats, setSelectedSeats] = useState([]);
+  useEffect(() => {
+    const savedSelectedSeats = localStorage.getItem("selectedSeats");
+    if (savedSelectedSeats) {
+      setSelectedSeats(JSON.parse(savedSelectedSeats));
+    }
+  
+    const savedMenu = localStorage.getItem("menu");
+    if (savedMenu) {
+      setItemQuantities(Object.keys(JSON.parse(savedMenu)).reduce((quantities, key) => {
+        quantities[key] = JSON.parse(savedMenu)[key].quantity;
+        return quantities;
+      }, {}));
+    }
+  }, []);
   useEffect(() => {
     axios
       .get("http://localhost:4000/food/all-Food")
@@ -98,14 +101,12 @@ function ChonDoAn() {
         console.error("Error fetching user data:", error);
       });
   }, []);
+  
   const renderFoods = () => {
-    const menuCost = JSON.parse(localStorage.getItem("menu"));
-   console.log("menuCost", menuCost);
+
     return foods.map((food) => {
       return (
-        <div
-          className="icon-box featured-box align-middle text-left"
-          key={food.id}>
+        <div className="icon-box featured-box align-middle text-left" key={food.foodId}>
           <div className="icon-box-img" style={{ width: "80px" }}>
             <div className="icon">
               <div className="icon-inner">
@@ -124,8 +125,9 @@ function ChonDoAn() {
                   }>
                   -
                 </span>
-                <span className="number">
-                  {itemQuantities[food.foodId] || 0}
+                <span className="number" size={2} autoComplete="off">
+                  {/* Display the quantity from localStorage if it exists */}
+                  {itemQuantities[food.foodId]?.quantity || 0}
                 </span>
                 <span
                   className="plus"
@@ -134,138 +136,158 @@ function ChonDoAn() {
                   }>
                   +
                 </span>
+          
+                  
+                  
               </div>
-              
             </div>
           </div>
         </div>
       );
     });
   };
-
+  
+  const navigate = useNavigate();
+  const menuData = JSON.parse(localStorage.getItem("shows"));
+  const showID = menuData[0].showId;
+  console.log("showID", showID);
+  const handle = () => {
+     
+     navigate(`/chonghe/${showID}`);
+  }
   const renderMenu = () => {
-    const menuData = JSON.parse(localStorage.getItem("shows"));
-    const menuCost = JSON.parse(localStorage.getItem("menu"));
-    console.log("menuCost", menuCost);
+    const menuData = JSON.parse(localStorage.getItem("shows")) || [];
+    let menuCost = JSON.parse(localStorage.getItem("menu")) || {};
+   
+    let food = JSON.parse(localStorage.getItem("food")) || {};
+    
+   
+    let totalFoodPrice = Object.keys(food).reduce((total, key) => {
+        const foodPrice = food[key].foodPrice || 0;
+        const quantity = food[key].quantity || 0;
+        return total + (foodPrice * quantity);
+    }, 0);
+    
+    console.log("Total food price:", totalFoodPrice);
+    
+    // Calculate total seat price
+    let totalSeatPrice = Object.keys(menuCost).reduce((total, key) => {
+        const seatPrice = menuCost[key].price || 0;
+        return total + seatPrice;
+    }, 0);
+    
+    console.log("Total seat price:", totalSeatPrice);
+    
+    
+    const totalSum = totalFoodPrice + totalSeatPrice;
+    console.log("Total sum of food and seat prices:", totalSum);
+    
+   
+    localStorage.setItem("totalFoodPrice", JSON.stringify(totalFoodPrice));
+    localStorage.setItem("totalSeatPrice", JSON.stringify(totalSeatPrice));
+    localStorage.setItem("totalSum", JSON.stringify(totalSum));
 
-    function totalAmount(menuCost, itemQuantities) {
-      return Object.keys(menuCost).reduce((total, key) => {
-        const quantity = itemQuantities[menuCost[key].foodId] || 0;
-        const price = menuCost[key].price || 0;
-        const foodPrice = quantity !== 0 ? menuCost[key].foodPrice || 0 : 0; // Sử dụng toán tử ba ngôi để đảm bảo rằng khi quantity = 0 thì foodPrice cũng bằng 0
-        return total + foodPrice + price;
-      }, 0);
-    }
-    const totalPrice = totalAmount(menuCost, itemQuantities);
-    console.log("totalPrice", totalPrice);
-
-    localStorage.setItem("Total", JSON.stringify(totalPrice));
     return (
-      <div className="col-12 col-md-12 col-lg-4">
-        <div className="col-inner">
-          <div className="c-box film-cart film-item" style={{}}>
-            <h4 className="cinema-title">BHD Star Le Van Viet</h4>
-            <span className="session-info">
-              <span className="screen">Screen {menuData[0].cinemaHallId}</span>-{" "}
-              {menuData[0].CreateOn} - Suất chiếu: {menuData[0].startTime}
-            </span>
-            <hr />
-            <h3 className="film-title">{menuData[0].movieName}</h3>
-            <div className="metaaa">
-              <span className="age-limit T18">T18</span>
-              <span className="type">Phụ đề</span>
-              <span className="format">{menuData[0].typeName}</span>
-            </div>
-
-            {menuCost ? (
-              <>
-                {Object.values(menuCost).some((item) => item.quantity !== 0) ? (
-                  <table className="cart-items">
-                    <tbody>
-                      {Object.keys(menuCost).map(
-                        (key) =>
-                          menuCost[key].quantity !== 0 && (
-                            <tr key={key}>
-                              <td className="title">
-                                <>
-                                  <span className="quantity">
-                                    {menuCost[key].quantity}
-                                  </span>
-                                  &nbsp;
-                                  <span>x</span>&nbsp;
-                                  <span className="name">
-                                    {menuCost[key].numberSeat}
-                                  </span>
-                                  <span className="name">
-                                    {menuCost[key].foodName}
-                                  </span>
-                                </>
-                                <br />
-                              </td>
-
-                              <td
-                                className="price"
-                                style={{ fontWeight: "bold" }}>
-                                {menuCost[key].price}
-                                {menuCost[key].foodPrice}
-                                VND
-                              </td>
-                            </tr>
-                          )
-                      )}
-                    </tbody>
-                  </table>
-                ) : null}
-
-                {Object.values(menuCost).some(
-                  (item) => item.quantity !== 0
-                ) ? null : (
-                  <span style={{ color: "red" }}>Vui lòng chọn ghế</span>
-                )}
-
-                <hr />
-
-                <table className="cart-total" style={{}}>
-                  <tbody>
-                    <tr>
-                      <td className="title">
-                        <span>Tổng tiền</span>
-                        <span
-                          className="is-xxsmall"
-                          style={{ display: "none" }}>
-                          (Đã bao gồm phụ thu)
+        <div className="col-12 col-md-12 col-lg-4">
+            <div className="col-inner">
+                <div className="c-box film-cart film-item">
+                    <h4 className="cinema-title">BHD Star Le Van Viet</h4>
+                    {menuData.length > 0 && (
+                        <span className="session-info">
+                            <span className="screen">Screen {menuData[0].cinemaHallId}</span> - {menuData[0].CreateOn} - Suất chiếu: {menuData[0].startTime}
                         </span>
-                      </td>
-                      <td className="price">{totalPrice} VND</td>
-                    </tr>
-                  </tbody>
-                </table>
+                    )}
+                    <hr />
+                    {menuData.length > 0 && <h3 className="film-title">{menuData[0].movieName}</h3>}
+                    <div className="metaaa">
+                        <span className="age-limit T18">T18</span>
+                        <span className="type">Phụ đề</span>
+                        {menuData.length > 0 && <span className="format">{menuData[0].typeName}</span>}
+                    </div>
 
-                <div className="text-center" style={{ marginTop: "20px" }}>
-                  <div className="error-message" style={{ display: "none" }} />
-                  <Link
-                    to={{
-                      pathname: "/thanhtoan",
-                    }}
-                    className="button primary expand"
-                    style={{ marginBottom: "15px" }}>
-                    Thanh Toán (3/4)
-                  </Link>
+                    {Object.keys(menuCost).length > 0 ? (
+                        <>
+                            {Object.values(menuCost).some((item) => item.quantity !== 0) || Object.values(food).some((item) => item.quantity !== 0) ? (
+                                <table className="cart-items">
+                                    <tbody>
+                                        {Object.keys(menuCost).map(
+                                            (key) =>
+                                                menuCost[key].quantity !== 0 && (
+                                                    <tr key={key}>
+                                                        <td className="title">
+                                                            <>
+                                                                <span className="quantity">{menuCost[key].quantity}</span>&nbsp;
+                                                                <span>x</span>&nbsp;
+                                                                <span className="name">{menuCost[key].numberSeat || menuCost[key].foodName}</span>
+                                                            </>
+                                                            <br />
+                                                        </td>
+                                                        <td className="price" style={{ fontWeight: "bold" }}>
+                                                            {menuCost[key].price}
+                                                        </td>
+                                                    </tr>
+                                                )
+                                        )}
+
+                                        
+                                        {Object.keys(food).map(
+                                            (key) =>
+                                                food[key].quantity !== 0 && (
+                                                    <tr key={key}>
+                                                        <td className="title">
+                                                            <>
+                                                                <span className="quantity">{food[key].quantity}</span>&nbsp;
+                                                                <span>x</span>&nbsp;
+                                                                <span className="name">{food[key].foodName}</span>
+                                                            </>
+                                                            <br />
+                                                        </td>
+                                                        <td style={{ fontWeight: "bold" }}>
+                                                            {food[key].foodPrice * food[key].quantity}
+                                                        </td>
+                                                    </tr>
+                                                )
+                                        )}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <span style={{ color: "red" }}>Vui lòng chọn ghế</span>
+                            )}
+                            <hr />
+                            <table className="cart-total">
+                                <tbody>
+                                    <tr>
+                                        <td className="title">
+                                            <span>Tổng tiền</span>
+                                            <span className="is-xxsmall" style={{ display: "none" }}>
+                                                (Đã bao gồm phụ thu)
+                                            </span>
+                                        </td>
+                                        <td className="price">{totalSum} VND</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div className="text-center" style={{ marginTop: "20px" }}>
+                                <div className="error-message" style={{ display: "none" }} />
+                                <Link to="/thanhtoan" className="button primary expand" style={{ marginBottom: "15px" }}>
+                                    Thanh Toán (3/4)
+                                </Link>
+                            </div>
+                        </>
+                    ) : (
+                        <span style={{ color: "red" }}>Vui lòng chọn ghế</span>
+                    )}
                 </div>
-              </>
-            ) : (
-              <span style={{ color: "red" }}>Vui lòng chọn ghế</span>
-            )}
-
-            <div style={{ marginBottom: "5px" }}>
-              <Link to="/chontime">← Trở lại</Link>
+                <div style={{ marginBottom: "5px" }}>
+                    <a onClick={() => handle()}>← Trở lại</a>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     );
-  };
+};
 
+  
+  
   return (
     <>
       <div id="col-1063932164" className="col small-12 large-12">
@@ -307,9 +329,7 @@ function ChonDoAn() {
                                 <div className="tab-content concession-items">
                                   <div className="concession-item">
                                     {renderFoods()}
-                                    <div className="total-price">
-                                      Tổng giá: {totalPrice} VND
-                                    </div>
+                                   
                                   </div>
                                   {/* Add other concession items here */}
                                 </div>
@@ -321,7 +341,7 @@ function ChonDoAn() {
 
                       {renderMenu()}
                     </div>
-                  </div>
+                  </div> 
                 </div>
               </div>
             </div>

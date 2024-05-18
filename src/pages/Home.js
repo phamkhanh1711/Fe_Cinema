@@ -29,19 +29,19 @@ import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 const itemData = [
   {
-    img: "https://images.unsplash.com/photo-1549388604-817d15aa0110",
+    img: "https://www.bhdstar.vn/wp-content/uploads/2024/04/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-31.jpg",
     title: "Bed",
   },
   {
-    img: "https://images.unsplash.com/photo-1563298723-dcfebaa392e3",
+    img: "https://www.bhdstar.vn/wp-content/uploads/2024/04/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-38.jpg",
     title: "Kitchen",
   },
   {
-    img: "https://images.unsplash.com/photo-1523413651479-597eb2da0ad6",
+    img: "https://www.bhdstar.vn/wp-content/uploads/2024/04/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-40.jpg",
     title: "Sink",
   },
   {
-    img: "https://images.unsplash.com/photo-1525097487452-6278ff080c31",
+    img: "https://www.bhdstar.vn/wp-content/uploads/2024/04/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-35.jpg",
     title: "Books",
   },
 ];
@@ -50,7 +50,10 @@ function Home() {
   const [GotoTop, setGotoTop] = useState(false);
   const location = useLocation();
 
-
+  useEffect(() => {
+    // Sau khi trang đã được tải lại, cuộn về đầu trang
+    window.scrollTo(0, 0);
+  }, []);
   useEffect(() => {
     function handleScroll() {
       if (window.scrollY >= 200) {

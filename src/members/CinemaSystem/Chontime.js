@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker"; // Add this line to import DatePicker
-import "react-datepicker/dist/react-datepicker.css";
+
 import logo from "/FE_CGV/fecenima/src/img/logo.png";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { set } from "lodash";
+import Cookies from "js-cookie";
 function Chontime() {
   const navigate = useNavigate();
   const { movieId } = useParams();
@@ -23,7 +23,10 @@ function Chontime() {
       setLoading(false);
     }, 2000);
   }, []);
-
+  useEffect(() => {
+    // Sau khi trang đã được tải lại, cuộn về đầu trang
+    window.scrollTo(0, 0);
+  }, []);
   const MyContainer = ({ className, children }) => {
     return (
       <div className="my-container">
@@ -31,64 +34,62 @@ function Chontime() {
       </div>
     );
   };
-
+  
   const handleDateChange = (date) => {
     if (date) {
       const formattedDate = format(date, "yyyy-MM-dd");
       console.log("New Date:", formattedDate); // Kiểm tra xem ngày mới đã được cập nhật hay không
       setStartDate(date);
       setCreateOn(formattedDate);
-      if (!isPastDate(date)) {
-        callApiWithDate(formattedDate);
-      } else {
-        setShowTime([]);
-      }
     }
   };
   
-
-
   useEffect(() => {
-    callApiWithDate(CreateOn);
+    if (CreateOn) {
+      callApiWithDate(CreateOn);
+    }
   }, [CreateOn]);
-const callApiWithDate = (date) => {
-  axios
-    .get(`http://localhost:4000/show/showTicket/${movieId}`, {
-      params: {
-        CreateOn: date,
-      },
-    })
-    .then((response) => {
-      console.log(response);
-      const movieName = response.data.getShow.movieName;
-      setMovieName(movieName);
-      const showTime = response.data.getShow.movieTypes[0].Shows;
-      setShowTime(showTime);
-      const typeName = response.data.getShow.movieTypes[0].typeName;
-      setTypeName(typeName);
-      setLoading(false); // Dừng hiển thị loading khi dữ liệu được load thành công
-    })
-    .catch((error) => {
-      console.error("Error fetching data:", error);
-    });
-};
-
-
-
+  
+  const callApiWithDate = (date) => {
+    axios
+      .get(`http://localhost:4000/show/showTicket/${movieId}`, {
+        params: {
+          CreateOn: date,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        const movieName = response.data.getShow.movieName;
+        setMovieName(movieName);
+        const showTime = response.data.getShow.movieTypes[0]?.Shows ?? [];
+        setShowTime(showTime);
+        const typeName = response.data.getShow.movieTypes[0]?.typeName;
+        setTypeName(typeName);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setShowTime([]); // Đảm bảo reset showTime khi có lỗi
+        setMovieName('');
+        setTypeName('');
+      });
+  };
+  
   // Kiểm tra nếu ngày đã chọn là ngày đã qua
   const isPastDate = (date) => {
     const today = new Date();
     return date.getTime() < today.getTime(); // So sánh giá trị thời gian
   };
+  
   const today = new Date();
-  function handledetail(
-    showId,
-    startTime,
-    movieName,
-    cinemaHallId,
-    CreateOn,
-    typeName
-  ) {
+  
+  
+  const handledetail = (showId, startTime, movieName, cinemaHallId, CreateOn, typeName) => {
+    const Token = Cookies.get("Token");
+    if (!Token) {
+      alert("Bạn cần đăng nhập để tiếp tục.");
+      navigate("/login");
+      return;
+    }
     // Create an object with the showId, startTime, and movieName
     const showInfo = {
       showId: showId,
@@ -119,17 +120,14 @@ const callApiWithDate = (date) => {
     // Save the updated array back to local storage
     localStorage.setItem("shows", JSON.stringify(showsArray));
 
-    // Log the showId, startTime, and movieName for confirmation
-    // console.log("showId:", showId);
-    // console.log("startTime:", startTime);
-    // console.log("movieName:", movieName);
-    // console.log("cinemaHallId:", cinemaHallId);
-    // console.log("CreateOn:", CreateOn);
-    // console.log("typeName:", typeName);
-
+    localStorage.removeItem("selectedSeats");
+    localStorage.removeItem("menu");
+    localStorage.removeItem("food");
     navigate(`/chonghe/${showId}`);
   }
 
+  const Token = Cookies.get("Token");
+  
   const renderShowTime = () => {
     if (loading) {
       return <div>Loading...</div>;
@@ -150,45 +148,78 @@ const callApiWithDate = (date) => {
             </ul>
           </div>
 
-          <div className="row row-small">
-            {typeName && movieName && showTime.length > 0 ? (
-              showTime.map((show) => (
-                <div
-                  key={show.showId}
-                  className="col medium-4 small-12 large-3">
-                  <div className="col-inner">
-                    <div className="session-item film-item">
-                      <div
-                        onClick={() =>
-                          handledetail(
-                            show.showId,
-                            show.startTime,
-                            movieName,
-                            show.cinemaHallId,
-                            show.CreateOn,
-                            typeName
-                          )
-                        }
-                        className="time text-center">
-                        {show.startTime}
-                      </div>
-                      <div className="meta text-center">
-                        <span className="type">Phụ đề</span>
-                        <span className="format">{typeName}</span>
-                        <span
-                          className="first-class"
-                          style={{ display: "none" }}>
-                          FIRST CLASS
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center">Không có lịch chiếu</div>
-            )}
+           <div className="row row-small">
+    {typeName && movieName && showTime.length > 0 ? (
+      showTime.map((show) => (
+        <div key={show.showId} className="col medium-4 small-12 large-3">
+          <div className="col-inner">
+            <div className="session-item film-item">
+              <div
+                onClick={() =>
+                  handledetail(
+                    show.showId,
+                    show.startTime,
+                    movieName,
+                    show.cinemaHallId,
+                    show.CreateOn,
+                    typeName
+                  )
+                }
+                className="time text-center"
+              >
+                {show.startTime}
+              </div>
+              <div className="meta text-center">
+                <span className="type">Phụ đề</span>
+                <span className="format">{typeName}</span>
+                <span className="first-class" style={{ display: "none" }}>
+                  FIRST CLASS
+                </span>
+              </div>
+            </div>
           </div>
+        </div>
+      ))
+    ) : (
+      <div className="text-center">Không có lịch chiếu</div>
+    )}
+  </div> 
+
+    {/* <div className="showtime-container">
+    {typeName && movieName && showTime.length > 0 ? (
+      showTime.map((show) => (
+        <div key={show.showId} className="show-item">
+          <div className="show-inner">
+            <div
+              onClick={() =>
+                handledetail(
+                  show.showId,
+                  show.startTime,
+                  movieName,
+                  show.cinemaHallId,
+                  show.CreateOn,
+                  typeName
+                )
+              }
+              className="time text-center"
+            >
+              {show.startTime}
+            </div>
+            <div className="meta text-center">
+              <span className="type">Phụ đề</span>
+              <span className="format">{typeName}</span>
+              <span className="first-class" style={{ display: "none" }}>
+                FIRST CLASS
+              </span>
+            </div>
+          </div>
+        </div>
+      ))
+    ) : (
+      <div className="text-center">Không có lịch chiếu</div>
+    )}
+  </div> */}
+
         </div>
       </div>
     );
@@ -197,12 +228,13 @@ const callApiWithDate = (date) => {
   return (
     <>
       {loading ? (
-        <CircularProgress />
+        <CircularProgress className="loading" />
       ) : (
         <div id="col-1063932164" className="col small-12 large-12">
           <div className="col-inner1 text-center">
             <div id="text-1009336684" className="text">
               <h2 id="p1">Bước 1: Chọn thời gian và địa điểm</h2>
+              
             </div>
           </div>
 
@@ -225,6 +257,7 @@ const callApiWithDate = (date) => {
                                 <div className="dp__main dp__theme_dark dp__flex_display order-datepicker">
                                   {/* Hiển thị date picker */}
                                   <DatePicker
+                                   className="datepicker"
                                     selected={startDate}
                                     onChange={handleDateChange}
                                     calendarContainer={MyContainer}

@@ -20,6 +20,7 @@ import Detail from "./members/CinemaSystem/Detail";
 import Comment from "./members/CinemaSystem/Comment";
 import ListComment from "./members/CinemaSystem/ListComment";
 import Bill from "./members/CinemaSystem/Bill";
+import VeKhuyenmai from "./members/CinemaSystem/VeKhuyenmai";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -41,7 +42,8 @@ root.render(
         <Route index path="/khuyenmai" element={<Khuyenmai />} />
         <Route index path="/hethongrap" element={<Hethongrap />} />
         <Route index path="/bill" element={<Bill />} />
-
+        <Route index path="/vekhuyenmai" element={<VeKhuyenmai />} />
+    
       </Routes>
     </App>
   </Router>
