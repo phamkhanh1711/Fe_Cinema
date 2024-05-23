@@ -20,7 +20,8 @@ function Header() {
   }
   function renderLogin() {
     const Token = Cookies.get("Token");
-
+    const Auth = Cookies.get("Auth") ? JSON.parse(Cookies.get("Auth")) : {};
+   
     if (Token) {
       return (
         <>
@@ -33,7 +34,7 @@ function Header() {
                 />
               </i>
               <span className="header-account-title" onClick={handleTaiKhoan}>
-                Phạm Khánh /
+              {Auth.fullName} /
               </span>
             </a>
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker"; // Add this line to import DatePicker
-
+import movie from "/FE_CGV/fecenima/src/img/movie.png";
+import bgheadertransparenthome from "/FE_CGV/fecenima/src/img/bgheadertransparenthome.png";
 import logo from "/FE_CGV/fecenima/src/img/logo.png";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
@@ -123,6 +124,8 @@ function Chontime() {
     localStorage.removeItem("selectedSeats");
     localStorage.removeItem("menu");
     localStorage.removeItem("food");
+    localStorage.removeItem("code");
+    localStorage.removeItem("discount");
     navigate(`/chonghe/${showId}`);
   }
 
@@ -181,7 +184,10 @@ function Chontime() {
         </div>
       ))
     ) : (
-      <div className="text-center">Không có lịch chiếu</div>
+      <div className="text-center">Không có lịch chiếu
+      
+       
+      </div>
     )}
   </div> 
 
@@ -249,14 +255,15 @@ function Chontime() {
                       </div>
                     </div>
                     <div id="app" data-v-app>
-                      <div>
-                        <div className="row">
-                          <div className="col medium-12 small-12 large-4">
-                            <div className="col-inner">
-                              <div className="c-box">
+                      <div >
+                        <div  className="row">
+                          <div  className="col medium-12 small-12 large-4">
+                            <div  className="col-inner">
+                              <div  className="c-box">
                                 <div className="dp__main dp__theme_dark dp__flex_display order-datepicker">
                                   {/* Hiển thị date picker */}
                                   <DatePicker
+                                  
                                    className="datepicker"
                                     selected={startDate}
                                     onChange={handleDateChange}
@@ -264,14 +271,21 @@ function Chontime() {
                                     dateFormat="yyyy-MM-dd"
                                     minDate={today}
                                   />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
 
-                          <div className="col medium-12 small-12 large-8">
-                            <div className="col-inner">{renderShowTime()}</div>
+                                  
+                                </div>
+                                
+                              </div>
+                              
+                            </div>
+                            
                           </div>
+                          <img  src={movie}  style={{width:"20%" , marginTop:"10%"}} alt="movie" />  
+                          <div  className="col medium-12 small-12 large-8">
+                            <div  className="col-inner">{renderShowTime()}</div>
+                            <img src={bgheadertransparenthome} style={{width:"130%" , marginTop:"14%"}} alt="movie" />
+                          </div>
+                         
                         </div>
                       </div>
                     </div>

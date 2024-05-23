@@ -14,6 +14,7 @@ function ListComment(props  ) {
       .then(response => {
         console.log(response);
         setComments(response.data.data.allCommentsOnPost)
+       
       })
       .catch(error => {
         console.error('Error fetching comments:', error);
@@ -29,14 +30,14 @@ function ListComment(props  ) {
   
     return comments.map((comment, index) => (
       <Grid item key={index} xs={6} sm={6} md={4}>
-      <div className="media" style={{ width: "50%", marginBottom: "-70px", overflow: "hidden" }}>
+      <div className="media" style={{ width: "50%", marginTop: "-2%", overflow: "hidden" }}>
         <a className="pull-left" href="#">
-          <Avatar alt={comment.User.fullName} src={comment.User.avatar} />
+          <Avatar alt={comment.User.fullName || null} src={comment.User.avatar} />
         </a>
         <div className="media-body">
           <ul className="sinlge-post-meta">
             <li>
-              <i className="fa fa-user" /> {comment.User.fullName}
+              <i className="fa fa-user" /> {comment.User.fullName || null}
             </li>
             <li>
               <i className="fa fa-clock-o" /> {new Date(comment.createdAt).toLocaleString()}
@@ -45,7 +46,7 @@ function ListComment(props  ) {
               <i className="fa fa-calendar" /> {new Date(comment.updatedAt).toLocaleString()}
             </li>
           </ul>
-          <Typography paragraph={true} style={{ marginLeft: "-220px", overflow: "hidden" ,fontSize:"18px" , marginRight:"200px"}}>
+          <Typography paragraph={true} style={{ overflow: "hidden" ,fontSize:"18px" }}>
             {comment.content}
           </Typography>
         </div>

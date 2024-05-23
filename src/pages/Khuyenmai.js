@@ -1,4 +1,4 @@
-import garden from "/FE_CGV/fecenima/src/img/garden.jpg";
+import h3event from "/FE_CGV/fecenima/src/img/h3event.gif";
 import { Box, CircularProgress, Grid, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, Button, ImageList, ImageListItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import Aos from "aos";
@@ -86,7 +86,8 @@ function Khuyenmai() {
             <div className="col-12 col-lg-12">
               <div className="col-inner1 text-center">
                 <div className="text">
-                  <h2 id="p1">Khuyến Mãi</h2>
+                  <img src={h3event} alt="Cinema" /> 
+                 
                 </div>
               </div>
             </div>
@@ -125,7 +126,7 @@ function Khuyenmai() {
                           width: "100%",
                         }}
                       >
-                        {item.description}
+                      Thời Gian: {item.startDate} ~ {item.endDate}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -214,6 +215,32 @@ function Khuyenmai() {
                         }}
                       >
                         {currentItem.code}
+                      </Typography>
+                    </Typography>
+                    <Typography
+                      paragraph={true}
+                      sx={{
+                        color: "white",
+                        marginLeft: "-17%",
+                        marginTop: "-1%",
+                        fontSize: "20px",
+                        maxWidth: "100%", // Adjust the value as needed
+                        fontFamily: "PT Sans",
+                        display: "flex",
+                        alignItems: "center", // Center-align the items vertically
+                        letterspacing: "2px",
+                      }}
+                    >
+                    
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: "skyblue",
+                          fontSize: "18px",
+                          fontFamily: "PT Sans",
+                        }}
+                      >
+                        {currentItem.description}
                       </Typography>
                     </Typography>
                   </Grid>

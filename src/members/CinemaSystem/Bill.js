@@ -3,7 +3,7 @@ import { Box, Grid } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import movie from "/FE_CGV/fecenima/src/img/movie.png";
 import { FcApproval } from "react-icons/fc";
-import qrcode from "/FE_CGV/fecenima/src/img/qrcode.png";
+
 import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";

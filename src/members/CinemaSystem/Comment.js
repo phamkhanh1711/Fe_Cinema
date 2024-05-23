@@ -23,7 +23,7 @@ function Comment(props) {
   const [fontWeight, setFontWeight] = React.useState("normal");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [errors, setErrors] = useState([]);
- 
+  const [comments, setComments] = useState([{}]);
   const [textarea, setTextarea] = useState({
     message: "",
   });
@@ -81,9 +81,14 @@ function Comment(props) {
           .post(url, commentData, config)
           .then((response) => {
             console.log(response);
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+
           })
           .catch((error) => {
             console.log(error);
+          
           });
       }
     }
@@ -93,7 +98,7 @@ function Comment(props) {
   return (
     <Grid container p={20} spacing={7} mt={-20}>
           <Typography sx={{ fontSize: "20px", color: "white" }}>
-          Your comment
+          
         </Typography>
       <FormControl sx={{ width: "100%" }}>
       

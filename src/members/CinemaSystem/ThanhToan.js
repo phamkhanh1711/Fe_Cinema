@@ -5,6 +5,7 @@ import Aos from "aos";
 import "aos/dist/aos.css";
 import axios from "axios";
 import Cookies from "js-cookie";
+
 function ThanhToan() {
   useEffect(() => {
     Aos.init();
@@ -12,6 +13,13 @@ function ThanhToan() {
   useEffect(() => {
     // Sau khi trang đã được tải lại, cuộn về đầu trang
     window.scrollTo(0, 0);
+  }, []);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   }, []);
   const [first, setFirst] = useState(true);
   const handleChange = (data) => {
@@ -40,6 +48,14 @@ function ThanhToan() {
 const Token = Cookies.get("Token");
 const [currCode , setCurrCode] = useState("");
 const handleDiscount = () => {
+
+  const appliedCode = JSON.parse(localStorage.getItem("code"));
+  
+  if (appliedCode === promotionCode) {
+    alert("Mã giảm giá đã được sử dụng");
+    return;
+  }
+
   // Kiểm tra xem người dùng đã nhập mã giảm giá chưa
   axios.get(`http://localhost:4000/promotion/checkPromo`, {
     headers: {
@@ -58,7 +74,7 @@ const handleDiscount = () => {
 
       const code = response.data.currPromo.code;
       console.log("code:", code);
-      localStorage.setItem("code", JSON.stringify(code));
+     
 
       if (currCode !== code) {
         const discount = response.data.currPromo.discount;
@@ -68,6 +84,7 @@ const handleDiscount = () => {
         const discountAmount = totalSum - discount;
 
         localStorage.setItem("totalSum", JSON.stringify(discountAmount));
+        localStorage.setItem("code", JSON.stringify(code));
         setCurrCode(code);
         alert("Áp dụng mã giảm giá thành công!");
       } else {
@@ -299,6 +316,9 @@ const foods = filteredFoodIds.reduce((acc, id) => {
 
   return (
     <>
+     {loading ? (
+        <CircularProgress className="loading" />
+      ) : (
       <div id="col-1063932164" className="col small-12 large-12">
         <div className="page-title-inner dark">
           <div className="row align-middle">
@@ -395,6 +415,7 @@ const foods = filteredFoodIds.reduce((acc, id) => {
           </div>
         </main>
       </div>
+      )}
     </>
   );
 }

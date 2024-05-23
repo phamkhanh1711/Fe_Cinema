@@ -3,13 +3,12 @@ import { CircularProgress } from "@mui/material";
 import { memo, useEffect, useState } from "react";
 import Aos from "aos";
 import "aos/dist/aos.css";
-import CountDownTimer from "./CountDownTimer";
+
 import Swal from "sweetalert2";
-import { useCountdownContext } from "../../CountdownContext";
 import axios from "axios";
 import { useContext } from "react";
 import { UserContext } from "../../UserContext";
-import { useParams } from "react-router-dom";
+
 function ChonDoAn() {
   const user = useContext(UserContext);
   console.log(user);
@@ -17,7 +16,13 @@ function ChonDoAn() {
   useEffect(() => {
     Aos.init();
   }, []);
-
+const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
   const [itemQuantities, setItemQuantities] = useState({});
   console.log("itemQuantities", itemQuantities);
   
@@ -25,9 +30,7 @@ function ChonDoAn() {
   const [totalPrice, setTotalPrice] = useState(0);
 
   const handleIncrease = (foodId, foodName, foodPrice) => {
-    console.log("foodId", foodId);
-    console.log("foodName", foodName);
-    console.log("foodPrice", foodPrice);
+ 
 
     let menuData = JSON.parse(localStorage.getItem("food")) || {};
 
@@ -43,7 +46,7 @@ function ChonDoAn() {
         };
     }
 
-    console.log(menuData);
+   
 
     let totalQuantity = Object.values(menuData).reduce((total, item) => total + (item.quantity || 0), 0);
 
@@ -290,6 +293,9 @@ const handleDecrease = (itemId, foodName, foodPrice) => {
   
   return (
     <>
+    {loading ? (
+        <CircularProgress className="loading" />
+      ) : (
       <div id="col-1063932164" className="col small-12 large-12">
         <div className="page-title-inner dark">
           <div className="row align-middle">
@@ -348,6 +354,7 @@ const handleDecrease = (itemId, foodName, foodPrice) => {
           </div>
         </main>
       </div>
+       )}
     </>
   );
 }

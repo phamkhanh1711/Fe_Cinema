@@ -67,7 +67,7 @@ const useCountDownTimer = (
           clearInterval(interval);
           localStorage.removeItem("countdownTime"); // Xoá giá trị khi thời gian hết
           onComplete();
-          navigate("/chontime");
+          navigate("/home");
           return 0;
         }
       });

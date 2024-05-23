@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { Button } from "@mui/material";
-import { render } from "@testing-library/react";
+import QRCode from "react-qr-code";
 function TaiKhoan() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -14,124 +14,119 @@ function TaiKhoan() {
   }, []);
 
   const [user, setUser] = useState({
-
     fullName: "",
     email: "",
     password: "",
     phoneNumber: "",
-  
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     let userData = JSON.parse(Cookies.get("Auth"));
 
-  console.log(userData)
-  if(userData)
-  {
-   
-    setUser({
-      fullName: userData.fullName,
-        email : userData.email,
-        password:userData.password,
-      
-        phoneNumber:userData.phoneNumber,
-       
-    })
-    
-  }    
-  },[])
+    console.log(userData);
+    if (userData) {
+      setUser({
+        fullName: userData.fullName,
+        email: userData.email,
+        password: userData.password,
 
+        phoneNumber: userData.phoneNumber,
+      });
+    }
+  }, []);
 
   const handleInput = (e) => {
     const nameInput = e.target.name;
     const value = e.target.value;
     setUser((state) => ({ ...state, [nameInput]: value }));
   };
- 
 
-   function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-   
-    
+
     let Auth = JSON.parse(Cookies.get("Auth"));
     console.log(Auth);
     let Token = Cookies.get("Token");
-     
-      let url = "http://localhost:4000/user/update/"+ Auth.userId;
-      console.log(url)
-      let config = { 
-        headers: { 
-        'Authorization': 'Bearer '+ Token,
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json'
-        } 
-        
-    };	
-    console.log(config)
-   
-      const formData = new FormData();
-       formData.append('name', user.fullName);
-       formData.append('phone', user.phoneNumber);
-      
-       formData.append('password', user.password);
-      formData.append('email', user.email);
-   
-   
-     
-      
-      axios.put(url, formData, config)
-        .then(response => {
-          console.log(response);   
-          alert("Update thông tin thanh cong");   
-        })
-        .catch(error => {
-          console.log(error);      
-        });
-       
-    }
+
+    let url = "http://localhost:4000/user/update/" + Auth.userId;
+    console.log(url);
+    let config = {
+      headers: {
+        Authorization: "Bearer " + Token,
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+    };
+    console.log(config);
+
+    const formData = new FormData();
+    formData.append("name", user.fullName);
+    formData.append("phone", user.phoneNumber);
+
+    formData.append("password", user.password);
+    formData.append("email", user.email);
+
+    axios
+      .put(url, formData, config)
+      .then((response) => {
+        console.log(response);
+        alert("Update thông tin thanh cong");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const Info = () => {
+    let Auth = JSON.parse(Cookies.get("Auth"));
+    console.log(Auth);
+
+    const qrData = `
   
-const Info = () => {
-  let Auth = JSON.parse(Cookies.get("Auth"));
-  console.log(Auth);
-   
+  Ten Khach Hang: ${Auth.fullName} \n
+  Email: ${Auth.email} \n
+  So Dien Thoai: ${Auth.phoneNumber} \n
+
+  
+
+
+`;
+
     return (
-      
       <div className="col-12 col-md-12 col-lg-5">
-      <div id="col-inner2" className="col-inner">
-        <aside className="widget">
-          <div className="icon-box icon-box-left align-middle text-left myaccount-card-box">
-            <div className="icon-box-img">
-              <div className="img-select">
-                <img src="https://bhdstar.vn/phpqrcode/?text=ONLA1033377" />
+        <div id="col-inner2" className="col-inner">
+          <aside className="widget">
+            <div className="icon-box icon-box-left align-middle text-left myaccount-card-box">
+              <QRCode
+                value={qrData}
+                style={{ width: "100%", marginTop: "7%" }}
+              />
+
+              <div className="icon-box-text p-last-0">
+                <div className="account-card-metas">
+                  <ul className="account-card-meta">
+                    <li>
+                      Tên đăng nhập:
+                      <span>{Auth.email}</span>
+                    </li>
+                    <li>
+                      Số thẻ: <span>ONLA1033377</span>
+                    </li>
+                    <li>
+                      Hạng thẻ: <span>Star</span>
+                    </li>
+                    <li>
+                      Ngày đăng ký: <span>{Auth.createdAt}</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
-            <div className="icon-box-text p-last-0">
-              <div className="account-card-metas">
-                <ul className="account-card-meta">
-                  <li>
-                    Tên đăng nhập:
-                    <span>
-                      {Auth.email}
-                    </span>
-                  </li>
-                  <li>
-                    Số thẻ: <span>ONLA1033377</span>
-                  </li>
-                  <li>
-                    Hạng thẻ: <span>Star</span>
-                  </li>
-                  <li>
-                    Ngày đăng ký: <span>{Auth.createdAt}</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </aside>
+          </aside>
+        </div>
       </div>
-    </div>
-    )
-}
+    );
+  };
 
   const renderdata = () => {
     return (
@@ -172,7 +167,13 @@ const Info = () => {
                 <label htmlFor="reg_last_name">
                   Tên đệm và tên <span className="required">*</span>
                 </label>
-                <input id="reg_last_name" type="text" name="fullName" value={user.fullName} onChange={handleInput}/>
+                <input
+                  id="reg_last_name"
+                  type="text"
+                  name="fullName"
+                  value={user.fullName}
+                  onChange={handleInput}
+                />
               </p>
             </div>
           </div>
@@ -183,12 +184,16 @@ const Info = () => {
                 <label htmlFor="reg_last_name">
                   Email <span className="required">*</span>
                 </label>
-                <input id="reg_last_name1" type="text" name="email" value={user.email} onChange={handleInput}/>
+                <input
+                  id="reg_last_name1"
+                  type="text"
+                  name="email"
+                  value={user.email}
+                  onChange={handleInput}
+                />
               </p>
             </div>
           </div>
-
-        
 
           <div className="col-md-12 col-sm-12 col-lg-12">
             <div className="col-inner">
@@ -196,49 +201,52 @@ const Info = () => {
                 <label htmlFor="reg_last_name">
                   Số điện thoại <span className="required">*</span>
                 </label>
-                <input id="reg_last_name2" type="text" name="phoneNumber" value={user.phoneNumber} onChange={handleInput}/>
+                <input
+                  id="reg_last_name2"
+                  type="text"
+                  name="phoneNumber"
+                  value={user.phoneNumber}
+                  onChange={handleInput}
+                />
               </p>
             </div>
           </div>
 
           <div className="col-md-12 col-sm-12 col-lg-12">
             <div className="col-inner">
-              
-              <Button onClick={handleSubmit} variant="contained" type="submit" sx={{ width: 200,height:25 , fontSize:"12px"}}>
-                    Cập Nhật Tài Khoản
-                </Button>
-             
+              <Button
+                onClick={handleSubmit}
+                variant="contained"
+                type="submit"
+                sx={{ width: 200, height: 25, fontSize: "12px" }}>
+                Cập Nhật Tài Khoản
+              </Button>
             </div>
           </div>
-          
         </div>
       </div>
     );
   };
 
-
-  const [data, setData] = useState([]); 
+  const [data, setData] = useState([]);
 
   const Token = Cookies.get("Token");
-  
+
   useEffect(() => {
-    axios.get("http://localhost:4000/booking/user/allBooking",
-    {
-      headers: {
-        Authorization: `Bearer ${Token}`,
-      },
-    }
-    )
-    .then((response) => {
-     
-      console.log(response);
-      setData(response.data.data.getAllBooking);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-  } 
-  , []);
+    axios
+      .get("http://localhost:4000/booking/user/allBooking", {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        setData(response.data.data.getAllBooking);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
   const calculateTotalPrice = () => {
     return data.reduce((acc, booking) => acc + booking.totalPrice, 0);
   };
@@ -293,13 +301,12 @@ const Info = () => {
         </div>
       </div>
     );
-    
   };
-  
+
   return (
     <div>
       {loading ? (
-        <CircularProgress className="loading"/>
+        <CircularProgress className="loading" />
       ) : (
         <div id="col-1063932164" className="col small-12 large-12">
           <div className="page-title-inner dark">
@@ -330,8 +337,7 @@ const Info = () => {
                             {renderdata()}
                           </div>
 
-                            {Info()}
-
+                          {Info()}
                         </div>
 
                         {renderDataHistory()}

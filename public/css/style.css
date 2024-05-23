@@ -3341,7 +3341,12 @@ p#p4 {
   position: relative;
   padding-top: 100%;
 }
+.img-selectt{
+  width: 100%;
+  position: relative;
+  padding-top: 100%;
 
+}
 .myaccount-card-box .icon-box-img .img-select img {
   padding: 0;
   border-radius: 0 !important;
@@ -3535,9 +3540,20 @@ td.text-right {
   pointer-events: none;
 }
 .loading{
-
-  position: fixed;
-  top: 50%;
+  
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff; /* Optional: background color */
+    z-index: 9999; /* Ensure it is on top */
+  
+ 
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
@@ -3575,4 +3591,8 @@ td.text-right {
   display: block;
   margin: 4px 0;
   
+}
+.brand {
+  width: 150%;
+  margin-left: -50%;
 }

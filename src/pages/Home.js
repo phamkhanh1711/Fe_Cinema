@@ -4,7 +4,7 @@ import thanhguom from "/FE_CGV/fecenima/src/img/thanhguom.png";
 import panda from "/FE_CGV/fecenima/src/img/panda.jpg";
 import mai from "/FE_CGV/fecenima/src/img/mai.jpg";
 import chibau from "/FE_CGV/fecenima/src/img/chibau.png";
-import madam from "/FE_CGV/fecenima/src/img/madam.jpg";
+
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "react-datepicker/dist/react-datepicker.css";
@@ -15,11 +15,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Aos from "aos";
 import "aos/dist/aos.css";
-
+import smaill from "/FE_CGV/fecenima/src/img/smaill.gif";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Stack from "@mui/material/Stack";
-
+import CircularProgress from "@mui/material/CircularProgress";
 import Rating from "@mui/material/Rating";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -78,22 +78,13 @@ function Home() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 1000);
   }, [location.pathname.includes("/chontime")]);
 
-  const navigate = useNavigate();
-  function handleDetail(event) {
-    navigate("/comment");
-  }
+ 
 
-  function closeDetail(event) {
-    const parent = event.target.closest(".film-item");
-    parent.querySelector(".detail-content").style.display = "none";
-    parent.querySelector(".overlay").style.display = "none";
-  }
-  function handlepay() {
-    navigate("/chontime");
-  }
+
+ 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = [
     logomai,
@@ -114,7 +105,14 @@ function Home() {
   };
 
   return (
-    <div>
+    <>
+      {loading ? (
+       
+       
+         <CircularProgress className="loading" style={{marginTop:"5%"}}/> 
+      ) : (
+
+       <div>
       <section className="sc-ehvNnt kEeQkC">
         <div className="sc-laZRCg dMekse left show" onClick={goToPreviousImage}>
           <FontAwesomeIcon icon={faChevronLeft} />
@@ -170,8 +168,7 @@ function Home() {
                 Phim bán chạy
               </h3>
               <ImageList
-                data-aos="fade-up"
-                data-aos-anchor-placement="top-bottom"
+             data-aos="zoom-in"
                 sx={{ width: "300", height: 500, marginTop: "80px" }}
                 variant="woven"
                 cols={4}
@@ -606,11 +603,11 @@ function Home() {
           <Grid container spacing={2} sx={{ maxWidth: 1000 }}>
             {/* Avatar */}
 
-            <Grid item xs={12} sx={{ marginTop: "100px", marginLeft: "200px" }}>
+            <Grid item xs={12} sx={{ marginTop: "100px", marginLeft: "15px" }}>
               <Stack data-aos="fade-right" direction="row" spacing={2}>
-                <Avatar
+                <img
                   src={thanhguom}
-                  sx={{ width: 350, height: 350, borderRadius: "0%" }} // Loại bỏ góc cong
+                  sx={{ width: 250, height: 350, borderRadius: "0%" }} // Loại bỏ góc cong
                 />
               </Stack>
             </Grid>
@@ -996,25 +993,26 @@ function Home() {
                   </div>
                 </div>
               </div>
-              
             </div>
           </div>
         </section>
       </div>
       {GotoTop && (
-            <button
-              style={{
-                backgroundColor: "skyblue",
-                position: "fixed",
-                right: 20,
-                bottom: 20,
-              }}
-              onClick={scrollToTop}
-            >
-              <i class="fas fa-arrow-up"></i>
-            </button>
-          )}
+        <button
+          style={{
+            backgroundColor: "skyblue",
+            position: "fixed",
+            right: 20,
+            bottom: 20,
+          }}
+          onClick={scrollToTop}>
+          <i class="fas fa-arrow-up"></i>
+        </button>
+      )}
     </div>
+      )}
+    </>
+   
   );
 }
 export default Home;

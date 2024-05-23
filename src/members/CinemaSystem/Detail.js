@@ -9,20 +9,25 @@ import thanhxuan from "/FE_CGV/fecenima/src/img/thanhxuan.jpg";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-
+import CircularProgress from "@mui/material/CircularProgress";
 import Comment from "./Comment";
 import ListComment from "./ListComment";
 function Detail(props) {
-  const [italic, setItalic] = React.useState(false);
-  const [fontWeight, setFontWeight] = React.useState("normal");
-  const [anchorEl, setAnchorEl] = React.useState(null);
+
   const params = useParams();
   const movieId = params.movieId;
-  console.log(movieId);
+  
   const [movieData, setMovieData] = useState(null);
   useEffect(() => {
     // Sau khi trang đã được tải lại, cuộn về đầu trang
     window.scrollTo(0, 0);
+  }, []);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
   }, []);
   useEffect(() => {
     axios
@@ -329,19 +334,31 @@ function Detail(props) {
 
   return (
     <>
-       <Grid container p={11} spacing={10}>
-          {renderData()}
-         
-
-
-
-       </Grid>
+      {loading ? (
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '100vh' 
+          }}
+        >
+          <CircularProgress className="loading" />
+        </Box>
+      ) : (
+        <>
+        
+          <Grid container p={11} spacing={10}>
+            {renderData()}
+          </Grid>
+           <Comment movieId={params.movieId} />
+             <ListComment movieId={params.movieId} />
      
-       <ListComment movieId={params.movieId} />
      
-      <Comment movieId={params.movieId} />
-    
+        </>
+      )}
     </>
+
   );
 }
 

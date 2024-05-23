@@ -55,7 +55,7 @@ function Register() {
     email: "",
     password: "",
     phoneNumber: "",
-    role: "",
+   role: "",
   });
 
   function handleInput(e) {
@@ -100,10 +100,10 @@ function Register() {
       flag = false;
     }
 
-    if (inputs.role === "") {
-      errorsSubmit.role = "Vui lòng chọn role";
-      flag = false;
-    }
+    // if (inputs.role === "") {
+    //   errorsSubmit.role = "Vui lòng chọn role";
+    //   flag = false;
+    // }
     // else if (
     //   !/^[A-Z]/.test(inputs.password) || // Kiểm tra chữ cái đầu tiên là in hoa
     //   !/\d/.test(inputs.password) ||     // Kiểm tra có ít nhất một chữ số
@@ -129,7 +129,7 @@ function Register() {
         email: inputs.email,
         password: inputs.password,
         phoneNumber: inputs.phoneNumber,
-        role: inputs.role,
+         role: inputs.role,
       };
       console.log(data);
       // Send a POST request to your API's registration endpoint
@@ -164,7 +164,7 @@ function Register() {
 
   const arr = [
     { id: 2, name: "user" },
-    { id: 1, name: "admin" }
+    { id: 3, name: "employee" }
   ];
   function IsEmail(email) {
     let regex =
@@ -186,7 +186,7 @@ function Register() {
   return (
     <div>
       {loading ? (
-        <CircularProgress />
+        <CircularProgress className="loading" />
       ) : (
         <div id="col-1063932164" className="col small-12 large-12">
           <div className="page-title-inner dark">

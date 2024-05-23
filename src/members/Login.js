@@ -34,7 +34,10 @@ function Login() {
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
   };
-
+  useEffect(() => {
+    // Sau khi trang đã được tải lại, cuộn về đầu trang
+    window.scrollTo(0, 0);
+  }, []);
   const goToNextImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex === images.length - 1 ? 0 : prevIndex + 1
@@ -89,13 +92,13 @@ function Login() {
           console.log(Auth);
            Cookies.set("Auth", JSON.stringify(Auth));
 
-          // Cookies.set("Auth", JSON.stringify(Auth));
+      
 
-          Swal.fire({
-            title: "Good job!",
-            text: res.data.message,
-            icon: "success",
-          });
+          // Swal.fire({
+          //   title: "Good job!",
+          //   text: res.data.message,
+          //   icon: "success",
+          // });
           navigate("/");
           // Sau khi đăng nhập thành công, điều hướng đến trang tương ứng
         })
