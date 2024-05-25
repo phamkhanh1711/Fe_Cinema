@@ -55,7 +55,7 @@ function Register() {
     email: "",
     password: "",
     phoneNumber: "",
-   role: "",
+  //  role: "",
   });
 
   function handleInput(e) {
@@ -129,7 +129,7 @@ function Register() {
         email: inputs.email,
         password: inputs.password,
         phoneNumber: inputs.phoneNumber,
-         role: inputs.role,
+        //  role: inputs.role,
       };
       console.log(data);
       // Send a POST request to your API's registration endpoint
@@ -162,10 +162,10 @@ function Register() {
     }
   }
 
-  const arr = [
-    { id: 2, name: "user" },
-    { id: 3, name: "employee" }
-  ];
+  // const arr = [
+  //   { id: 2, name: "user" },
+  //   { id: 3, name: "" }
+  // ];
   function IsEmail(email) {
     let regex =
       /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zAZ0-9]{2,4})+$/;
@@ -175,13 +175,13 @@ function Register() {
       return true;
     }
   }
-  function renderSelect() {
-    return arr.map((item) => (
-      <option key={item.id} value={item.name}>
-        {item.name}
-      </option>
-    ));
-  }
+  // function renderSelect() {
+  //   return arr.map((item) => (
+  //     <option key={item.id} value={item.name}>
+  //       {item.name}
+  //     </option>
+  //   ));
+  // }
   
   return (
     <div>
@@ -309,7 +309,7 @@ function Register() {
                                     </p>
                                   </div>
                                 </div>
- <div className="col-inner">
+ {/* <div className="col-inner">
   <p>
     <label htmlFor="reg_last_name">
       Role <span className="required">*</span>
@@ -319,7 +319,7 @@ function Register() {
     </select>
     {errors.role && <span className="text-danger">{errors.role}</span>}
   </p>
-</div>  
+</div>   */}
                                 <button
                                   className="sc-eDWCr gyTwqg mt-2"
                                   type="submit">

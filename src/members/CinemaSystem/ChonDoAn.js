@@ -163,11 +163,13 @@ const handleDecrease = (itemId, foodName, foodPrice) => {
     let menuCost = JSON.parse(localStorage.getItem("menu")) || {};
    
     let food = JSON.parse(localStorage.getItem("food")) || {};
-    
+    console.log("food", food); 
    
     let totalFoodPrice = Object.keys(food).reduce((total, key) => {
         const foodPrice = food[key].foodPrice || 0;
         const quantity = food[key].quantity || 0;
+        console.log("quantity", quantity);
+
         return total + (foodPrice * quantity);
     }, 0);
     

@@ -13,87 +13,88 @@ import NotItem from "/FE_CGV/fecenima/src/img/NotItem.png";
 
 function Bill() {
   const booking = JSON.parse(localStorage.getItem("booking"));
-  
+
   const token = Cookies.get("Token");
 
-const [status, setStatus] = useState(null);
-const [getDetail, setGetDetail] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [getDetail, setGetDetail] = useState(null);
 
-useEffect(() => {
-  const code = JSON.parse(localStorage.getItem("code"));
-console.log("code", code);
-  const queryParams = window.location.search;
+  useEffect(() => {
+    const code = JSON.parse(localStorage.getItem("code"));
+    console.log("code", code);
+    const queryParams = window.location.search;
 
-  // Parse chuỗi query parameters
-  const searchParams = new URLSearchParams(queryParams);
+    // Parse chuỗi query parameters
+    const searchParams = new URLSearchParams(queryParams);
 
-  // Gọi API success_payment
-  axios
-    .get(`http://localhost:4000/payment/payment-detail/${queryParams}`)
-    .then((res) => {
-      console.log("API Response:", res);
-      
-      const status = res.data;
-      setStatus(res.data);
+    // Gọi API success_payment
+    axios
+      .get(`http://localhost:4000/payment/payment-detail/${queryParams}`)
+      .then((res) => {
+        console.log("API Response:", res);
 
-      const RspCode = res.data.RspCode;
+        const status = res.data;
+        setStatus(res.data);
 
-      const url = `http://localhost:4000/promotion/savePromo `
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      if (RspCode === "00") {
-        console.log(code);
-        axios.post(url, { code }, config)
-        .then((promoRes) => {
-          console.log("Promo save response:", promoRes);
-        })
-        .catch((promoError) => {
-          console.error("Error saving promo code:", promoError);
-        });
-        axios.post(`http://localhost:4000/booking/createbooking`, booking, {
+        const RspCode = res.data.RspCode;
+
+        const url = `http://localhost:4000/promotion/savePromo `;
+        const config = {
           headers: {
             Authorization: `Bearer ${token}`,
-          }
-        })
-        .then((res) => {
-          console.log(res);
-          const bookingId = res.data.data.createBook.bookingId;
-  
-          axios.get(`http://localhost:4000/booking/detailBooking/${bookingId}`)
-            .then((res) => {
-              console.log("API Response:", res);
-  
-              setGetDetail(res.data.data);
-              localStorage.removeItem("selectedSeats");
-              localStorage.removeItem("shows");
-              localStorage.removeItem("menu");
+          },
+        };
+        if (RspCode === "00") {
+          console.log(code);
+          axios
+            .post(url, { code }, config)
+            .then((promoRes) => {
+              console.log("Promo save response:", promoRes);
+            })
+            .catch((promoError) => {
+              console.error("Error saving promo code:", promoError);
             });
-        });
-      }
-     
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: status.Message,
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    })
-    .catch((error) => {
-      console.error("Error fetching payment status:", error);
-      Swal.fire({
-        icon: "error",
-        title: status,
-        text: "Đặt vé thất bại",
-        footer: '<a href="#">Why do I have this issue?</a>',
-      });
-    });
-}, []);
+          axios
+            .post(`http://localhost:4000/booking/createbooking`, booking, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
+            .then((res) => {
+              console.log(res);
+              const bookingId = res.data.data.createBook.bookingId;
 
-  
+              axios
+                .get(`http://localhost:4000/booking/detailBooking/${bookingId}`)
+                .then((res) => {
+                  console.log("API Response:", res);
+
+                  setGetDetail(res.data.data);
+                  localStorage.removeItem("selectedSeats");
+                  localStorage.removeItem("shows");
+                  localStorage.removeItem("menu");
+                });
+            });
+        }
+
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: status.Message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching payment status:", error);
+        Swal.fire({
+          icon: "error",
+          title: status,
+          text: "Đặt vé thất bại",
+          footer: '<a href="#">Why do I have this issue?</a>',
+        });
+      });
+  }, []);
 
   const total = JSON.parse(localStorage.getItem("Total"));
   if (!getDetail || !getDetail.detailBooking) {
@@ -107,77 +108,96 @@ console.log("code", code);
             color: "#72be43",
             fontWeight: "bold",
             fontFamily: "serif",
-          
           }}
-         
-         
-          ml={70}
-        >
+          ml={70}>
           {getDetail}
-         <img style={{width:"30%" , marginTop:"-20%", marginLeft:"-6%"}} src={NotItem}/>
+          <img
+            style={{ width: "30%", marginTop: "-20%", marginLeft: "-6%" }}
+            src={NotItem}
+          />
         </Typography>
       </>
     );
   }
-// Assume getDetail is populated correctly
-const seat1 = getDetail.detailBookingTicket[0]?.CinemaHallSeat.Seat.numberSeat;
-const priceSeat1 = getDetail.detailBookingTicket[0]?.CinemaHallSeat.priceSeat;
-const seat2 = getDetail.detailBookingTicket[1]?.CinemaHallSeat.Seat.numberSeat;
-const priceSeat2 = getDetail.detailBookingTicket[1]?.CinemaHallSeat.priceSeat;
+  // Assume getDetail is populated correctly
+  const seat1 =
+    getDetail.detailBookingTicket[0]?.CinemaHallSeat.Seat.numberSeat;
+  const priceSeat1 = getDetail.detailBookingTicket[0]?.CinemaHallSeat.priceSeat;
+  const seat2 =
+    getDetail.detailBookingTicket[1]?.CinemaHallSeat.Seat.numberSeat;
+  const priceSeat2 = getDetail.detailBookingTicket[1]?.CinemaHallSeat.priceSeat;
 
-let totalPriceSeats;
-let seatInfo;
+  let totalPriceSeats;
+  let seatInfo;
 
-if (getDetail.detailBookingTicket.length === 1) {
-  totalPriceSeats = priceSeat1;
-  seatInfo = `${seat1} - ${priceSeat1} VND`;
-} else {
-  totalPriceSeats = priceSeat1 + priceSeat2;
-  seatInfo = `${seat1} - ${priceSeat1} VND, ${seat2} - ${priceSeat2} VND`;
-}
+  if (getDetail.detailBookingTicket.length === 1) {
+    totalPriceSeats = priceSeat1;
+    seatInfo = `${seat1} - ${priceSeat1} VND`;
+  } else {
+    totalPriceSeats = priceSeat1 + priceSeat2;
+    seatInfo = `${seat1} - ${priceSeat1} VND, ${seat2} - ${priceSeat2} VND`;
+  }
 
-// Calculate the total price of food items and format their information
-let totalPriceFood = 0;
-let foodInfo = '';
+  // Calculate the total price of food items and format their information
+  let totalPriceFood = 0;
+  let foodInfo = "";
+
+  if (getDetail.detailBookingFood.length > 0) {
+    foodInfo = getDetail.detailBookingFood
+      .map((food) => {
+        const foodName = food.Food.foodName;
+        console.log(foodName);
+        totalPriceFood += food.priceFood;
+        return `${foodName} - ${food.priceFood} VND`;
+      })
+      .join(", ");
+  } else {
+    foodInfo = "Không có";
+  }
+
+  let formattedFoodItems = "";
 
 if (getDetail.detailBookingFood.length > 0) {
-  foodInfo = getDetail.detailBookingFood.map(food => {
-    const foodName = food.Food.foodName;
-    console.log(foodName);
-    totalPriceFood += food.priceFood;
-    return `${foodName} - ${food.priceFood} VND`;
-  }).join(', ');
+  formattedFoodItems = getDetail.detailBookingFood
+    .map((food) => {
+      const foodName = food.Food.foodName;
+      const foodQuantity = food.quantity;
+      return `${foodQuantity} x ${foodName}`;
+    })
+    .join(", ");
 } else {
-  foodInfo = 'Không có';
+  formattedFoodItems = "Không có";
 }
 
-// Calculate total price
-const totalPrice = totalPriceSeats + totalPriceFood;
+  const discount = localStorage.getItem("discount");
+  const totalSum = localStorage.getItem("totalSum");
+  // Calculate total price
+  const totalPrice = totalPriceSeats + totalPriceFood;
 
-const qrData = `
-  MA Ve: ${getDetail.detailBooking.bookingId}
-  Ten Khach Hang: ${getDetail.detailBooking.User.fullName}
-  Email: ${getDetail.detailBooking.User.email}
-  So Dien Thoai: ${getDetail.detailBooking.User.phoneNumber}
-  Ten Phim: ${getDetail.detailBookingTicket[0]?.Show.movie.movieName}
+    const qrData = `
+    MA Ve: ${getDetail.detailBooking.bookingId}
+    Ten Khach Hang: ${getDetail.detailBooking.User.fullName}
+    Email: ${getDetail.detailBooking.User.email}
+    So Dien Thoai: ${getDetail.detailBooking.User.phoneNumber}
+    Ten Phim: ${getDetail.detailBookingTicket[0]?.Show.movie.movieName}
 
-  Rap Chieu: ${getDetail.detailBookingTicket[0]?.Show.CinemaHall.cinemaHallName}
-  Ghe: ${seatInfo}
-  Tong Gia Ghe: ${totalPriceSeats} VND
-  Gia Do An: ${foodInfo}
-  Tong Gia Do An: ${totalPriceFood} VND
-  Tong Tien: ${getDetail.detailBooking.totalPrice} VND
-`;
+    Rap Chieu: ${getDetail.detailBookingTicket[0]?.Show.CinemaHall.cinemaHallName}
+    Ghe: ${seatInfo}
+    Tong Gia Ghe: ${totalPriceSeats} VND
+    Gia Do An: ${formattedFoodItems}
+    Tong Gia Do An: ${totalPriceFood} VND
 
-// Encode the data to be displayed in the QR code
-const encoder = new TextEncoder();
-const encodedQrData = encoder.encode(qrData);
-console.log(new TextDecoder('utf-8').decode(encodedQrData));
+    Tong Gia: ${totalSum} VND
+    Giam Gia: ${discount} VND
+    Tong Tien Sau Giam Gia  ${getDetail.detailBooking.totalPrice} VND
+  `;
 
-
+  // Encode the data to be displayed in the QR code
+  const encoder = new TextEncoder();
+  const encodedQrData = encoder.encode(qrData);
+  console.log(new TextDecoder("utf-8").decode(encodedQrData));
 
   const handleQRCode = () => {
-    
     return (
       <>
         <Typography
@@ -189,8 +209,7 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
             fontFamily: "serif",
           }}
           mt={2}
-          ml={4}
-        >
+          ml={4}>
           Hãy đưa mã QR này đến quầy để nhận vé
         </Typography>
         <Typography
@@ -202,9 +221,7 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
             fontSize: "20px",
             width: "100%",
             display: "block",
-          }}
-         
-        ></Typography>
+          }}></Typography>
         <QRCode value={qrData} style={{ width: "100%", marginTop: "7%" }} />
         <Box>
           <Typography
@@ -216,29 +233,42 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
               fontSize: "20px",
               width: "100%",
               display: "block",
-            }}
-          ></Typography>
+            }}></Typography>
         </Box>
       </>
     );
   };
-  
 
   const renderMenuRight = () => {
     if (!getDetail) return null;
-  
-    const cinemaHallSeats = getDetail.detailBookingTicket.map(ticket => ticket.CinemaHallSeat);
-    const seatNumbers = cinemaHallSeats.map(seat => seat.Seat.numberSeat).join(', ');
-  
-   
-    const foodName = getDetail.detailBookingFood.map(name => name.Food);
 
-    const foodNumbers = foodName.map(food => food.foodName).join(', ');
+    const cinemaHallSeats = getDetail.detailBookingTicket.map(
+      (ticket) => ticket.CinemaHallSeat
+    );
+    const seatNumbers = cinemaHallSeats
+      .map((seat) => seat.Seat.numberSeat)
+      .join(", ");
 
-    const totalFoodPrice = getDetail.detailBookingFood.reduce((total, food) => total + (food.priceFood || 0), 0);
-    const totalPriceSeat = getDetail.detailBookingTicket.reduce((total, ticket) => {
-    return total + ticket.CinemaHallSeat.priceSeat;
-  }, 0);
+    const discount = localStorage.getItem("discount");
+    const totalSum = localStorage.getItem("totalSum");
+
+    const foodDetails = getDetail.detailBookingFood.map((detail) => {
+      return `${detail.quantity}x ${detail.Food.foodName}`;
+  });
+  
+  const foodList = foodDetails.join(", ");
+
+
+    const totalFoodPrice = getDetail.detailBookingFood.reduce(
+      (total, food) => total + (food.priceFood || 0),
+      0
+    );
+    const totalPriceSeat = getDetail.detailBookingTicket.reduce(
+      (total, ticket) => {
+        return total + ticket.CinemaHallSeat.priceSeat;
+      },
+      0
+    );
 
     return (
       <Grid id="col-inner1" item xs={4}>
@@ -258,7 +288,7 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
             <Typography
               variant="h4"
               style={{
-                marginLeft:"40%",
+                marginLeft: "40%",
                 color: "#72be43",
                 fontWeight: "bold",
                 fontFamily: "serif",
@@ -294,7 +324,8 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
                   fontSize: "20px",
                   fontFamily: "PT Sans",
                 }}>
-                {getDetail.detailBookingTicket[0].Show.startTime} ~ {getDetail.detailBookingTicket[0].Show.endTime} 
+                {getDetail.detailBookingTicket[0].Show.startTime} ~{" "}
+                {getDetail.detailBookingTicket[0].Show.endTime}
               </Typography>
             </Typography>
             <Typography
@@ -324,10 +355,13 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
                   fontSize: "20px",
                   fontFamily: "PT Sans",
                 }}>
-                {getDetail.detailBookingTicket[0].Show.CinemaHall.cinemaHallName}
+                {
+                  getDetail.detailBookingTicket[0].Show.CinemaHall
+                    .cinemaHallName
+                }
               </Typography>
             </Typography>
-            
+
             <Typography
               paragraph={true}
               sx={{
@@ -355,11 +389,9 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
                   fontSize: "20px",
                   fontFamily: "PT Sans",
                 }}>
-                {seatNumbers} 
+                {seatNumbers}
               </Typography>
             </Typography>
-            
-
 
             <Typography
               paragraph={true}
@@ -389,12 +421,12 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
                   fontSize: "20px",
                   fontFamily: "PT Sans",
                 }}>
-                {foodNumbers} 
+               {foodList}
               </Typography>
             </Typography>
           </Grid>
         </Grid>
-  
+
         <Grid id="col-inner1" container spacing={-2} mt={2}>
           <Grid item xs={12}>
             {/* Order summary */}
@@ -482,7 +514,7 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
                 marginTop: "2%",
                 fontSize: "20px",
                 maxWidth: "100%",
-                fontFamily:"PT Sans",
+                fontFamily: "PT Sans",
                 display: "flex",
                 alignItems: "center",
               }}>
@@ -503,6 +535,68 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
                   fontSize: "20px",
                   fontFamily: "PT Sans",
                 }}>
+                {totalSum} VND
+              </Typography>
+            </Typography>
+            <Typography
+              paragraph={true}
+              sx={{
+                color: "white",
+                marginTop: "2%",
+                fontSize: "20px",
+                maxWidth: "100%",
+                fontFamily: "PT Sans",
+                display: "flex",
+                alignItems: "center",
+              }}>
+              <Box
+                sx={{
+                  marginRight: "10px",
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  fontFamily: "serif",
+                }}>
+                Giảm Giá:
+              </Box>
+              <Typography
+                ml={18}
+                sx={{
+                  fontWeight: "bold",
+                  color: "#72be43",
+                  fontSize: "20px",
+                  fontFamily: "PT Sans",
+                }}>
+                -{discount} VND
+              </Typography>
+            </Typography>
+            <Typography
+              paragraph={true}
+              sx={{
+                color: "white",
+                marginTop: "2%",
+                fontSize: "20px",
+                maxWidth: "100%",
+                fontFamily: "PT Sans",
+                display: "flex",
+                alignItems: "center",
+              }}>
+              <Box
+                sx={{
+                  marginRight: "10px",
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  fontFamily: "serif",
+                }}>
+                Tổng tiền (đã giảm giá):
+              </Box>
+              <Typography
+                ml={18}
+                sx={{
+                  fontWeight: "bold",
+                  color: "#72be43",
+                  fontSize: "20px",
+                  fontFamily: "PT Sans",
+                }}>
                 {getDetail.detailBooking.totalPrice} VNĐ
               </Typography>
             </Typography>
@@ -511,9 +605,6 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
       </Grid>
     );
   };
-  
-  
-
 
   const renderStatus = () => {
     if (!status) {
@@ -540,7 +631,6 @@ console.log(new TextDecoder('utf-8').decode(encodedQrData));
     const Auth = Cookies.get("Auth");
 
     const user = JSON.parse(Auth);
-    
 
     return (
       <>

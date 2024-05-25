@@ -48,15 +48,13 @@ function ThanhToan() {
 const Token = Cookies.get("Token");
 const [currCode , setCurrCode] = useState("");
 const handleDiscount = () => {
-
   const appliedCode = JSON.parse(localStorage.getItem("code"));
   
-  if (appliedCode === promotionCode) {
-    alert("Mã giảm giá đã được sử dụng");
+  if (appliedCode) {
+    alert("Mã giảm giá sử dụng được một lần duy nhất!");
     return;
   }
 
-  // Kiểm tra xem người dùng đã nhập mã giảm giá chưa
   axios.get(`http://localhost:4000/promotion/checkPromo`, {
     headers: {
       Authorization: `Bearer ${Token}`,
@@ -74,27 +72,24 @@ const handleDiscount = () => {
 
       const code = response.data.currPromo.code;
       console.log("code:", code);
-     
 
-      if (currCode !== code) {
-        const discount = response.data.currPromo.discount;
-        console.log("discount:", discount);
-        const totalSum = JSON.parse(localStorage.getItem("totalSum"));
-        // discount only one 
-        const discountAmount = totalSum - discount;
+      const discount = response.data.currPromo.discount;
+      console.log("discount:", discount);
+      const totalSum = JSON.parse(localStorage.getItem("totalSum"));
+      console.log("totalSum:", totalSum);
 
-        localStorage.setItem("totalSum", JSON.stringify(discountAmount));
-        localStorage.setItem("code", JSON.stringify(code));
-        setCurrCode(code);
-        alert("Áp dụng mã giảm giá thành công!");
-      } else {
-        alert("Mã giảm giá đã được sử dụng");
-      }
+      const totalSumDiscount = totalSum - discount; 
+      localStorage.setItem("totalSumDiscount", totalSumDiscount);
+
+      localStorage.setItem("discount", discount);
+      localStorage.setItem("code", JSON.stringify(code));
+      setCurrCode(code);
+      setDiscount(discount);
+      alert("Áp dụng mã giảm giá thành công!");
     })
     .catch((error) => {
       console.error("Error applying discount:", error);
       alert(error.response.data.message || "Đã xảy ra lỗi khi áp dụng mã giảm giá. Vui lòng thử lại sau.");
-   
     });
 };
 
@@ -103,8 +98,9 @@ const handleDiscount = () => {
 
     const menuData = JSON.parse(localStorage.getItem("shows")); // dữ liệu về phim
 
+    const discount = JSON.parse(localStorage.getItem("discount")) || 0;
 
-
+   
     const menuCost = JSON.parse(localStorage.getItem("menu")); // dữ liệu về ghế 
     let food = JSON.parse(localStorage.getItem("food")) || {}; // dữ liệu về thức ăn
 
@@ -119,7 +115,7 @@ const handleDiscount = () => {
    const totalSum = JSON.parse(localStorage.getItem("totalSum")); // tổng giá
    console.log("totalSum:", totalSum);
 
-    
+    const totalSumDiscount = JSON.parse(localStorage.getItem("totalSumDiscount")); // tổng giá sau khi giảm giá
 
     const seatIds = Object.keys(menuCost).map((key) => menuCost[key].seatId);
 
@@ -159,17 +155,18 @@ const foods = filteredFoodIds.reduce((acc, id) => {
       }
     
       const bookingData = {
-        showId: menuData[0].showId, // Đảm bảo rằng menuData chứa dữ liệu hợp lệ
-        seat: seat, // Kiểm tra xem biến seat có chứa dữ liệu hợp lệ không
-        food: foods, // Kiểm tra xem biến food có chứa dữ liệu hợp lệ không
-        totalPrice: totalSum, // Đảm bảo rằng total đã được tính toán đúng
+        showId: menuData[0].showId,
+        seat: seat,
+        food: foods,
+        totalPrice: totalSumDiscount ? totalSumDiscount : totalSum,
       };
       localStorage.setItem("booking", JSON.stringify(bookingData));
+      
       const vnpay = {
-        amount: Number(totalSum),
+        amount: Number(totalSumDiscount ? totalSumDiscount : totalSum),
         bankCode: "VNBANK",
         language: "vn",
-      }
+      };
       console.log(vnpay);
       // Kiểm tra xem các trường dữ liệu cần thiết đã được điền đầy đủ hay chưa
       if (!bookingData.showId || !bookingData.seat || !bookingData.food || !bookingData.totalPrice) {
@@ -267,6 +264,18 @@ const foods = filteredFoodIds.reduce((acc, id) => {
                                       </td>
                                       <td className="price">{totalSum} VND</td>
                                   </tr>
+                                  <tr>
+                    <td className="title">
+                      <span>Mã giảm giá</span>
+                    </td>
+                    <td className="price">-{discount} VND</td>
+                  </tr>
+                  <tr>
+                    <td className="title">
+                      <span>Tổng tiền sau giảm giá</span>
+                    </td>
+                    <td className="price">{totalSumDiscount} VND</td>
+                  </tr>
                               </tbody>
                           </table>
                           <div className="text-center" style={{ marginTop: "20px" }}>

@@ -129,6 +129,8 @@ function TaiKhoan() {
   };
 
   const renderdata = () => {
+    let Auth = JSON.parse(Cookies.get("Auth"));
+
     return (
       <div id="col-inner1" className="col-inner">
         <div className="icon-box icon-box-left align-middle text-left myaccount-box">
@@ -144,14 +146,8 @@ function TaiKhoan() {
             </label>
           </div>
           <div className="icon-box-text p-last-0">
-            <h4 className="display-name">Phạm Khánh</h4>
-            <div className="account-metas">
-              <ul className="account-meta">
-                <li>
-                  Tổng chi tiêu trong tháng (3/2024): <span>0&nbsp;VND</span>
-                </li>
-              </ul>
-            </div>
+            <h4 className="display-name">{Auth.fullName}</h4>
+
             <span className="description">
               Vui lòng đăng ảnh chân dung, thấy rõ mặt có kích thước: ngang 200
               pixel và dọc 200 pixel (dung lượng dưới 1MB)
@@ -231,7 +227,7 @@ function TaiKhoan() {
   const [data, setData] = useState([]);
 
   const Token = Cookies.get("Token");
-
+  
   useEffect(() => {
     axios
       .get("http://localhost:4000/booking/user/allBooking", {
@@ -242,6 +238,8 @@ function TaiKhoan() {
       .then((response) => {
         console.log(response);
         setData(response.data.data.getAllBooking);
+      
+       
       })
       .catch((error) => {
         console.log(error);
@@ -257,7 +255,7 @@ function TaiKhoan() {
         <div className="col-md-12 col-sm-12 col-lg-8">
           <h2 style={{ marginBottom: "0px" }}>Lịch sử giao dịch</h2>
         </div>
-
+  
         <div className="table-container">
           <table className="table table-bordered">
             <thead>
@@ -267,33 +265,39 @@ function TaiKhoan() {
                 <th className="text-center">Mã lấy vé</th>
                 <th className="text-left">Thông tin rạp</th>
                 <th className="text-right">Tổng tiền</th>
-                <th className="text-right">Điểm RP</th>
               </tr>
             </thead>
             <tbody>
-              {data.map((booking, index) => (
-                <tr key={index}>
-                  <td className="text-center">{index + 1}</td>
-                  <td className="text-center">{booking.createOn}</td>
-                  <td className="text-center">{booking.bookingId}</td>
-                  <td className="text-center">
-                    {/* Thông tin rạp */}
-                    {/* Ví dụ: {booking.BookingTickets[0].Show.CinemaHall.cinemaHallName} */}
-                    1
+              {data.length > 0 ? (
+                data.map((booking, index) => (
+                  <tr key={index}>
+                    <td className="text-center">{index + 1}</td>
+                    <td className="text-center">{booking.createOn}</td>
+                    <td className="text-center">{booking.bookingId}</td>
+                    <td className="text-center">
+  {Array.isArray(booking.BookingTickets) && booking.BookingTickets.length > 0 ? (
+    booking.BookingTickets[0]?.Show?.CinemaHall?.cinemaHallName || <p>Không có thông tin rạp</p>
+  ) : (
+    <p>Không có thông tin rạp</p>
+  )}
+</td>
+
+                    <td className="text-right">{booking.totalPrice} VND</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="text-center">
+                    Không có dữ liệu
                   </td>
-                  <td className="text-right">{booking.totalPrice} VND</td>
-                  <td className="text-right">0</td>
                 </tr>
-              ))}
+              )}
               <tr>
                 <td className="text-right" colSpan={4}>
                   <b>Tổng cộng</b>
                 </td>
                 <td className="text-right">
                   <b>{calculateTotalPrice()} VND</b>
-                </td>
-                <td className="text-right">
-                  <b>0</b>
                 </td>
               </tr>
             </tbody>
@@ -302,6 +306,7 @@ function TaiKhoan() {
       </div>
     );
   };
+  
 
   return (
     <div>

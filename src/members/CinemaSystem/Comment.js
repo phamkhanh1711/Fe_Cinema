@@ -15,10 +15,12 @@ import FormatItalic from "@mui/icons-material/FormatItalic";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";  
 import Cookies from "js-cookie";
 import axios from "axios";
+import { CircularProgress } from "@mui/material";
+import { set } from "lodash";
 function Comment(props) {
   
 
-
+  const [loading, setLoading] = useState(false);
   const [italic, setItalic] = React.useState(false);
   const [fontWeight, setFontWeight] = React.useState("normal");
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -27,6 +29,16 @@ function Comment(props) {
   const [textarea, setTextarea] = useState({
     message: "",
   });
+
+  useEffect(() => {
+    // Set a timeout to change the loading state after 2 seconds
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3000); // 2 seconds delay
+
+    // Clear the timeout if the component is unmounted
+    return () => clearTimeout(timer);
+  }, []);
   function handleInput(e) {
     const nameInput = e.target.name;
     const value = e.target.value;
@@ -36,7 +48,7 @@ function Comment(props) {
     e.preventDefault();
     let errorsSubmit = {};
     let flag = true;
-
+    
     if (textarea.message == "") {
       errorsSubmit.message = "Vui lap nhap binh luan";
       flag = false;
@@ -46,7 +58,7 @@ function Comment(props) {
     } else {
       setErrors({});
       const { movieId } = props;
-
+      setLoading(true);
       
       console.log(movieId);
       const Token = Cookies.get("Token");
@@ -81,14 +93,15 @@ function Comment(props) {
           .post(url, commentData, config)
           .then((response) => {
             console.log(response);
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
+          setLoading(false);
+          window.location.reload();
+              
+            
 
           })
           .catch((error) => {
             console.log(error);
-          
+          setLoading(false);
           });
       }
     }
@@ -96,7 +109,9 @@ function Comment(props) {
 
  
   return (
-    <Grid container p={20} spacing={7} mt={-20}>
+    <>
+       
+        <Grid container p={20} spacing={7} mt={-20}>
           <Typography sx={{ fontSize: "20px", color: "white" }}>
           
         </Typography>
@@ -171,13 +186,22 @@ function Comment(props) {
       </FormControl>
       
       <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit}
-        sx={{ marginTop: "20px" }}>
-        Comment
-      </Button>
-    </Grid>
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          sx={{ marginTop: "20px" }}
+          disabled={loading} // Disable the button when loading
+        >
+          {loading ? (
+            <CircularProgress size={24} /> // Display a loading spinner when loading
+          ) : (
+            "Gửi Bình Luận" // Display the button text when not loading
+          )}
+        </Button>
+       </Grid>
+     
+    </>
+    
   );
 }
 export default Comment;

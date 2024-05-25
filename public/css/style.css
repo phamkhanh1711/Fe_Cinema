@@ -3549,7 +3549,7 @@ td.text-right {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #fff; /* Optional: background color */
+   
     z-index: 9999; /* Ensure it is on top */
   
  

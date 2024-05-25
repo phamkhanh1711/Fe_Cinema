@@ -4,7 +4,7 @@ import movie from "/FE_CGV/fecenima/src/img/movie.png";
 import bgheadertransparenthome from "/FE_CGV/fecenima/src/img/bgheadertransparenthome.png";
 import logo from "/FE_CGV/fecenima/src/img/logo.png";
 import { useNavigate } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -35,7 +35,7 @@ function Chontime() {
       </div>
     );
   };
-  
+
   const handleDateChange = (date) => {
     if (date) {
       const formattedDate = format(date, "yyyy-MM-dd");
@@ -44,13 +44,13 @@ function Chontime() {
       setCreateOn(formattedDate);
     }
   };
-  
+
   useEffect(() => {
     if (CreateOn) {
       callApiWithDate(CreateOn);
     }
   }, [CreateOn]);
-  
+
   const callApiWithDate = (date) => {
     axios
       .get(`http://localhost:4000/show/showTicket/${movieId}`, {
@@ -62,29 +62,44 @@ function Chontime() {
         console.log(response);
         const movieName = response.data.getShow.movieName;
         setMovieName(movieName);
+
         const showTime = response.data.getShow.movieTypes[0]?.Shows ?? [];
         setShowTime(showTime);
-        const typeName = response.data.getShow.movieTypes[0]?.typeName;
+
+        const typeName = response.data.getShow.movieTypes;
         setTypeName(typeName);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
         setShowTime([]); // Đảm bảo reset showTime khi có lỗi
-        setMovieName('');
-        setTypeName('');
+        setMovieName("");
+        setTypeName("");
       });
   };
-  
+
   // Kiểm tra nếu ngày đã chọn là ngày đã qua
   const isPastDate = (date) => {
     const today = new Date();
     return date.getTime() < today.getTime(); // So sánh giá trị thời gian
   };
-  
+
   const today = new Date();
-  
-  
-  const handledetail = (showId, startTime, movieName, cinemaHallId, CreateOn, typeName) => {
+
+  const handledetail = (
+    showId,
+    startTime,
+    movieName,
+    cinemaHallId,
+    CreateOn,
+    typeName
+  ) => {
+    console.log("showId", showId);
+    console.log("startTime", startTime);
+    console.log("movieName", movieName);
+    console.log("cinemaHallId", cinemaHallId);
+    console.log("CreateOn", CreateOn);
+    console.log("typeName", typeName);
+
     const Token = Cookies.get("Token");
     if (!Token) {
       alert("Bạn cần đăng nhập để tiếp tục.");
@@ -126,37 +141,99 @@ function Chontime() {
     localStorage.removeItem("food");
     localStorage.removeItem("code");
     localStorage.removeItem("discount");
+    localStorage.removeItem("totalSeatPrice");
+    localStorage.removeItem("totalSum");
+    localStorage.removeItem("totalSumDiscount");
     navigate(`/chonghe/${showId}`);
-  }
+  };
 
   const Token = Cookies.get("Token");
-  
+
   const renderShowTime = () => {
     if (loading) {
       return <div>Loading...</div>;
     }
+
     return (
       <div className="c-box pb-0">
-        <div className="c-box" style={{ marginBottom: "20px" }}>
-          <div className="mt-list-widget">
-            <p>
-              Tầng 4, Vincom Plaza Lê Văn Việt, 50 Lê Văn Việt, P.Hiệp Phú, Quận
-              9, TP.HCM
-            </p>
+        {typeName.length > 0 ? (
+          typeName.map((typeName) => (
+            <div className="c-box" style={{ marginBottom: "20px" }}>
+              <div className="mt-list-widget">
+                <p>
+                  Tầng 4, Vincom Plaza Lê Văn Việt, 50 Lê Văn Việt, P.Hiệp Phú,
+                  Quận 9, TP.HCM
+                </p>
 
-            <ul>
-              <li>
-                <a href={logo}>BHD Star </a>
-              </li>
-            </ul>
-          </div>
+                <ul>
+                  <li>
+                    <a href={logo}>BHD Star Cinema </a>
+                  </li>
+                </ul>
+                <li>
+                  <Typography
+                    variant="h4"
+                    style={{
+                      textAlign: "center",
+                      marginLeft: "-250%",
+                      marginTop: "-30%",
+                      color: "#72be43",
+                      fontWeight: "bold",
+                      fontSize: "25px",
+                    }}>
+                    Phim {typeName.typeName}
+                  </Typography>
+                </li>
+              </div>
 
-           <div className="row row-small">
-    {typeName && movieName && showTime.length > 0 ? (
-      showTime.map((show) => (
-        <div key={show.showId} className="col medium-4 small-12 large-3">
-          <div className="col-inner">
-            <div className="session-item film-item">
+              <div className="row row-small">
+                {typeName.Shows.map((show) => (
+                  <div
+                    key={show.showId}
+                    className="col medium-4 small-12 large-3">
+                    <div className="col-inner">
+                      <div className="session-item film-item">
+                        <div
+                          onClick={() =>
+                            handledetail(
+                              show.showId,
+                              show.startTime,
+                              movieName,
+                              show.cinemaHallId, // Add optional chaining here
+                              show.CreateOn,
+                              typeName.typeName
+                            )
+                          }
+                          className="time text-center">
+                          {show.startTime}
+                        </div>
+                        <div className="meta text-center">
+                          <span className="type">Phụ đề</span>
+                          {/* <span className="format" style={{fontSize:"17px"}}>
+                    
+                      {
+                        typeName.map((type) => (
+                          <span key={type._id}>{type.typeName}</span>
+                        ))
+                      }
+                    </span> */}
+                          <span
+                            className="first-class"
+                            style={{ display: "none" }}>
+                            FIRST CLASS
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* <div className="showtime-container">
+      {typeName && movieName && showTime.length > 0 ? (
+        showTime.map((show) => (
+          <div key={show.showId} className="show-item">
+            <div className="show-inner">
               <div
                 onClick={() =>
                   handledetail(
@@ -181,52 +258,77 @@ function Chontime() {
               </div>
             </div>
           </div>
-        </div>
-      ))
-    ) : (
-      <div className="text-center">Không có lịch chiếu
-      
-       
-      </div>
-    )}
-  </div> 
-
-    {/* <div className="showtime-container">
-    {typeName && movieName && showTime.length > 0 ? (
-      showTime.map((show) => (
-        <div key={show.showId} className="show-item">
-          <div className="show-inner">
-            <div
-              onClick={() =>
-                handledetail(
-                  show.showId,
-                  show.startTime,
-                  movieName,
-                  show.cinemaHallId,
-                  show.CreateOn,
-                  typeName
-                )
-              }
-              className="time text-center"
-            >
-              {show.startTime}
+        ))
+      ) : (
+        <div className="text-center">Không có lịch chiếu</div>
+      )}
+    </div> */}
             </div>
-            <div className="meta text-center">
-              <span className="type">Phụ đề</span>
-              <span className="format">{typeName}</span>
-              <span className="first-class" style={{ display: "none" }}>
-                FIRST CLASS
-              </span>
+          ))
+        ) : (
+          <div className="c-box" style={{ marginBottom: "20px" }}>
+            <div className="mt-list-widget">
+              <p>
+                Tầng 4, Vincom Plaza Lê Văn Việt, 50 Lê Văn Việt, P.Hiệp Phú,
+                Quận 9, TP.HCM
+              </p>
+
+              <ul>
+                <li>
+                  <a href={logo}>BHD Star Cinema </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="row row-small">
+              <div
+                className="text-center"
+                style={{
+                  marginLeft: "30%",
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  marginTop: "5%",
+                }}>
+                Không có lịch chiếu
+              </div>
+            </div>
+
+            {/* <div className="showtime-container">
+      {typeName && movieName && showTime.length > 0 ? (
+        showTime.map((show) => (
+          <div key={show.showId} className="show-item">
+            <div className="show-inner">
+              <div
+                onClick={() =>
+                  handledetail(
+                    show.showId,
+                    show.startTime,
+                    movieName,
+                    show.cinemaHallId,
+                    show.CreateOn,
+                    typeName
+                  )
+                }
+                className="time text-center"
+              >
+                {show.startTime}
+              </div>
+              <div className="meta text-center">
+                <span className="type">Phụ đề</span>
+                <span className="format">{typeName}</span>
+                <span className="first-class" style={{ display: "none" }}>
+                  FIRST CLASS
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      ))
-    ) : (
-      <div className="text-center">Không có lịch chiếu</div>
-    )}
-  </div> */}
-
-        </div>
+        ))
+      ) : (
+        <div className="text-center">Không có lịch chiếu</div>
+      )}
+    </div> */}
+          </div>
+        )}
       </div>
     );
   };
@@ -240,7 +342,6 @@ function Chontime() {
           <div className="col-inner1 text-center">
             <div id="text-1009336684" className="text">
               <h2 id="p1">Bước 1: Chọn thời gian và địa điểm</h2>
-              
             </div>
           </div>
 
@@ -255,37 +356,38 @@ function Chontime() {
                       </div>
                     </div>
                     <div id="app" data-v-app>
-                      <div >
-                        <div  className="row">
-                          <div  className="col medium-12 small-12 large-4">
-                            <div  className="col-inner">
-                              <div  className="c-box">
+                      <div>
+                        <div className="row">
+                          <div className="col medium-12 small-12 large-4">
+                            <div className="col-inner">
+                              <div className="c-box">
                                 <div className="dp__main dp__theme_dark dp__flex_display order-datepicker">
                                   {/* Hiển thị date picker */}
                                   <DatePicker
-                                  
-                                   className="datepicker"
+                                    className="datepicker"
                                     selected={startDate}
                                     onChange={handleDateChange}
                                     calendarContainer={MyContainer}
                                     dateFormat="yyyy-MM-dd"
                                     minDate={today}
                                   />
-
-                                  
                                 </div>
-                                
                               </div>
-                              
                             </div>
-                            
                           </div>
-                          <img  src={movie}  style={{width:"20%" , marginTop:"10%"}} alt="movie" />  
-                          <div  className="col medium-12 small-12 large-8">
-                            <div  className="col-inner">{renderShowTime()}</div>
-                            <img src={bgheadertransparenthome} style={{width:"130%" , marginTop:"14%"}} alt="movie" />
+                          <img
+                            src={movie}
+                            style={{ width: "20%", marginTop: "10%" }}
+                            alt="movie"
+                          />
+                          <div className="col medium-12 small-12 large-8">
+                            <div className="col-inner">{renderShowTime()}</div>
+                            <img
+                              src={bgheadertransparenthome}
+                              style={{ width: "130%", marginTop: "14%" }}
+                              alt="movie"
+                            />
                           </div>
-                         
                         </div>
                       </div>
                     </div>
