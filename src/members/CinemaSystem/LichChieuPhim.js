@@ -128,7 +128,7 @@ function LichChieuPhim() {
               container
               spacing={5}
               sx={{ maxWidth: "1300px", marginLeft: "13%" }}>
-              {getMovie.map((movie, index) => (
+              {getMovie.slice(0,2).map((movie, index) => (
                 <Grid
                   data-aos="fade-right"
                   key={movie.id}
@@ -445,7 +445,7 @@ function LichChieuPhim() {
                   container
                   spacing={5}
                   sx={{ maxWidth: "1300px", marginLeft: "17%" }}>
-                  {getMovie.map((movie, index) => (
+                  {getMovie.slice(2,9).map((movie, index) => (
                     <Grid
                       data-aos="fade-right"
                       key={movie.id}

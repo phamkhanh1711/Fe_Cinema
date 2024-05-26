@@ -42,9 +42,9 @@ function ListComment(props  ) {
             <li>
               <i className="fa fa-clock-o" /> {new Date(comment.createdAt).toLocaleString()}
             </li>
-            <li>
+            {/* <li>
               <i className="fa fa-calendar" /> {new Date(comment.updatedAt).toLocaleString()}
-            </li>
+            </li> */}
           </ul>
           <Typography paragraph={true} style={{ overflow: "hidden" ,fontSize:"18px" }}>
             {comment.content}
