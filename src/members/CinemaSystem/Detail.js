@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
-import Avatar from "@mui/material/Avatar";
+
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import thanhxuan from "/FE_CGV/fecenima/src/img/thanhxuan.jpg";
+
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";

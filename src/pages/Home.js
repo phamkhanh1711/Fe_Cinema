@@ -19,7 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Aos from "aos";
 import "aos/dist/aos.css";
-import smaill from "/FE_CGV/fecenima/src/img/smaill.gif";
+
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Stack from "@mui/material/Stack";
