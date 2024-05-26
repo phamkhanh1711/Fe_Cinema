@@ -1,4 +1,4 @@
-import garden from "/FE_CGV/fecenima/src/img/garden.jpg";
+import garden from "../img/garden.jpg";
 import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import Aos from "aos";

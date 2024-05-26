@@ -1,4 +1,4 @@
-import h3event from "/FE_CGV/fecenima/src/img/h3event.gif";
+import h3event from "../img/h3event.gif";
 import { Box, CircularProgress, Grid, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, Button, ImageList, ImageListItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import Aos from "aos";

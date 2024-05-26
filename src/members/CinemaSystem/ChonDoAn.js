@@ -1,10 +1,10 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
-import { memo, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import Aos from "aos";
 import "aos/dist/aos.css";
 
-import Swal from "sweetalert2";
+
 import axios from "axios";
 import { useContext } from "react";
 import { UserContext } from "../../UserContext";

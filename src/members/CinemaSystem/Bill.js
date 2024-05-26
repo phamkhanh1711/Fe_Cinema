@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Box, Grid } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import movie from "/FE_CGV/fecenima/src/img/movie.png";
+import movie from "../../img/movie.png";
 import { FcApproval } from "react-icons/fc";
 
 import { useState } from "react";
@@ -9,7 +9,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import QRCode from "react-qr-code";
-import NotItem from "/FE_CGV/fecenima/src/img/NotItem.png";
+import NotItem from "../../img/NotItem.png";
 
 function Bill() {
   const booking = JSON.parse(localStorage.getItem("booking"));

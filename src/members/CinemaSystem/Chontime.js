@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker"; // Add this line to import DatePicker
-import movie from "/FE_CGV/fecenima/src/img/movie.png";
-import bgheadertransparenthome from "/FE_CGV/fecenima/src/img/bgheadertransparenthome.png";
-import logo from "/FE_CGV/fecenima/src/img/logo.png";
+import movie from "../../img/movie.png";
+import bgheadertransparenthome from "../../img/bgheadertransparenthome.png";
+import logo from "../../img/logo.png";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress, Typography } from "@mui/material";
 import { format } from "date-fns";
