@@ -86,7 +86,7 @@ function Khuyenmai() {
             <div className="col-12 col-lg-12">
               <div className="col-inner1 text-center">
                 <div className="text">
-                  <img src={h3event} alt="Cinema" /> 
+                  <img  data-aos="flip-right" src={h3event} alt="Cinema" /> 
                  
                 </div>
               </div>
@@ -127,6 +127,18 @@ function Khuyenmai() {
                         }}
                       >
                       Thời Gian: {item.startDate} ~ {item.endDate}
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                          fontFamily: "serif",
+                          fontSize: "16px",
+                          width: "100%",
+                        }}
+                      >
+                      Giảm giá: {item.discount}VND - Mã code: {item.code}
                       </Typography>
                     </Grid>
                   </Grid>

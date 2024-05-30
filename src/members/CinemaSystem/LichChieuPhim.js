@@ -83,7 +83,9 @@ function LichChieuPhim() {
       .get("http://localhost:4000/movie/all-upcoming-movie")
       .then((res) => {
         console.log(res);
-        setMovie(res.data.allUpcomingMovie);
+        
+        const reversedMovies = res.data.allUpcomingMovie.reverse();
+        setMovie(reversedMovies);
       })
       .catch((err) => {
         console.log(err);
@@ -128,7 +130,7 @@ function LichChieuPhim() {
               container
               spacing={5}
               sx={{ maxWidth: "1300px", marginLeft: "13%" }}>
-              {getMovie.slice(0,2).map((movie, index) => (
+              {getMovie.slice(0,8).map((movie, index) => (
                 <Grid
                   data-aos="fade-right"
                   key={movie.id}
@@ -445,7 +447,7 @@ function LichChieuPhim() {
                   container
                   spacing={5}
                   sx={{ maxWidth: "1300px", marginLeft: "17%" }}>
-                  {getMovie.slice(2,9).map((movie, index) => (
+                  {getMovie.slice(8,19).map((movie, index) => (
                     <Grid
                       data-aos="fade-right"
                       key={movie.id}
@@ -565,6 +567,7 @@ function LichChieuPhim() {
               </Box>
             </div>
           </div>
+
           <div class="row large-columns-2 medium-columns-2 small-columns-1">
             <div id="col-1675063463" class="col small-12 large-12">
               <div class="col-inner"></div>

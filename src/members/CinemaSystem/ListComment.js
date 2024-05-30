@@ -30,7 +30,7 @@ function ListComment(props  ) {
   
     return comments.map((comment, index) => (
       <Grid item key={index} xs={6} sm={6} md={4}>
-      <div className="media" style={{ width: "50%", marginTop: "-2%", overflow: "hidden" }}>
+      <div className="media" style={{ width: "100%", marginTop: "-2%", overflow: "hidden" }}>
         <a className="pull-left" href="#">
           <Avatar alt={comment.User.fullName || null} src={comment.User.avatar} />
         </a>

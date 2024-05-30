@@ -209,14 +209,7 @@ function Chontime() {
                         </div>
                         <div className="meta text-center">
                           <span className="type">Phụ đề</span>
-                          {/* <span className="format" style={{fontSize:"17px"}}>
-                    
-                      {
-                        typeName.map((type) => (
-                          <span key={type._id}>{type.typeName}</span>
-                        ))
-                      }
-                    </span> */}
+                          
                           <span
                             className="first-class"
                             style={{ display: "none" }}>
